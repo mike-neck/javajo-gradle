@@ -1,0 +1,20 @@
+apply plugin: 'idea'
+
+ext {
+    jdk = 1.8
+    encoding = 'UTF-8'
+}
+
+subprojects {
+    if (file("${project.name}.gradle").exists()) {
+        apply from: "${project.name}.gradle"
+    }
+}
+
+idea {
+    project {
+        jdkName = jdk
+        languageLevel = jdk
+        vcs = 'Git'
+    }
+}

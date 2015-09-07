@@ -1,0 +1,28 @@
+# java project
+*.class
+*.jar
+
+# gradle directories
+.gradle/
+build/
+!gradle/wrapper/*.jar
+
+# IntelliJ IDEA files
+*.ipr
+*.iml
+*.iws
+out/
+.idea/
+
+# eclipse files
+.classpath
+.project
+.settings/
+
+# mac files
+.DS_Store
+
+# vim
+*~
+
+
