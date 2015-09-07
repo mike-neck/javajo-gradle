@@ -3,7 +3,12 @@ ext {
     subProjects = secondLevel.collect {
         [parent: it, dir: new File(it)]
     }.collect {
-        [parent: it.parent, dirs: it.dir.listFiles().findAll {it.isDirectory()}]
+        [
+                parent: it.parent,
+                dirs: it.dir.listFiles().findAll {
+                    it.isDirectory() && !(it.name in ['.gradle', 'biuld'])
+                }
+        ]
     }.collect {map ->
         map.dirs.collect {":${map.parent}:${it.name}" as String}
     }.flatten().toArray(new String[0])

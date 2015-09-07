@@ -4,7 +4,9 @@ subprojects {
     repositories {
         mavenCentral()
     }
+
     dependencies {
+        compile 'org.jetbrains:annotations:13.0'
         testCompile 'junit:junit:4.12'
     }
 }
