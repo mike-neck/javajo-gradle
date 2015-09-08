@@ -1,7 +1,7 @@
-Java女子部 Gradle勉強会
+Java女子部 Gradleふんわり入門
 ===
 
-[Java女子部](https://javajo.doorkeeper.jp/)のGradle勉強会の資料です。
+[Java女子部 Gradleふんわり入門](https://javajo.doorkeeper.jp/events/31185)の資料です。
 
 主に次のレベルの方を想定してGradleの講義・ハンズオンを行います。
 
@@ -12,15 +12,16 @@ Java女子部 Gradle勉強会
 
 既にカスタムタスクを書いている方や、プラグインを作成している方には絶対に物足りない内容になります。
 
-日程
+開催概要
 ===
 
 * 日付
   * 2015年9月27日(日)
 * 場所
-  * 知らん
+  * [株式会社ALBERT様](http://www.albert2005.co.jp/access/)
+    * 東京都新宿区西新宿1-26-2 新宿野村ビル15F
 * 開催時刻
-  * 知らん
+  * 13:00〜17:00
 
 前提知識
 ===
