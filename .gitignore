@@ -26,4 +26,12 @@ out/
 # vim
 *~
 
-
+# training directory
+java-projects/init-project/groovy-lib/**/*
+!java-projects/init-project/groovy-lib/.gitkeep
+java-projects/init-project/java-lib/**/*
+!java-projects/init-project/java-lib/.gitkeep
+java-projects/init-project/no-type/**/*
+!java-projects/init-project/no-type/.gitkeep
+java-projects/init-project/scala-lib/**/*
+!java-projects/init-project/scala-lib/.gitkeep

@@ -10,7 +10,17 @@ ext {
                 }
         ]
     }.collect {map ->
-        map.dirs.collect {":${map.parent}:${it.name}" as String}
+        map.dirs.collect {
+            def pn = it.name
+            def isInInit = pn == 'init-project'
+            !isInInit ?
+                    [":${map.parent}:${it.name}" as String] :
+                    it.listFiles().findAll {
+                        it.isDirectory() && !(it.name in ['gradle', 'build'])
+                    }.collect {
+                        ":${map.parent}:${pn}:${it.name}" as String
+                    }
+        }
     }.flatten().toArray(new String[0])
 }
 include subProjects
