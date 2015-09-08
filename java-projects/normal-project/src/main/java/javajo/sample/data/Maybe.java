@@ -94,7 +94,7 @@ public interface Maybe<V> {
      * Operating context interface allows {@link Nothing} instance to do some action.
      */
     interface OperatingContext {
-        void andNothing(Task task);
+        void orOnNothingDo(Task task);
     }
 
     /**
@@ -102,13 +102,13 @@ public interface Maybe<V> {
      * @param op action for value.
      * @return Operating context.
      */
-    OperatingContext whenSome(Operator<? super V> op);
+    OperatingContext onSomeDo(Operator<? super V> op);
 
     /**
      * Does an action when this container has value.
      * @param op
      */
-    void ifSome(Operator<? super V> op);
+    void whenSome(Operator<? super V> op);
 
     /**
      * Creates {@link Nothing} instance.

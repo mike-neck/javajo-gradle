@@ -19,8 +19,6 @@ import javajo.sample.functions.Functions.Condition;
 import javajo.sample.functions.Functions.Function;
 import javajo.sample.functions.Functions.Generator;
 import javajo.sample.functions.Functions.Operator;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -78,7 +76,7 @@ final class MaybeBase {
         }
 
         @Override
-        public OperatingContext whenSome(Operator<? super V> op) {
+        public OperatingContext onSomeDo(Operator<? super V> op) {
             return tsk -> {
                 verifyNotNullTask(tsk);
                 tsk.execute();
@@ -86,7 +84,7 @@ final class MaybeBase {
         }
 
         @Override
-        public void ifSome(Operator<? super V> op) {
+        public void whenSome(Operator<? super V> op) {
             // do nothing
         }
 
@@ -145,13 +143,13 @@ final class MaybeBase {
         }
 
         @Override
-        public OperatingContext whenSome(Operator<? super V> op) {
+        public OperatingContext onSomeDo(Operator<? super V> op) {
             verifyNotNullOperator(op);
             return tk -> op.accept(value);
         }
 
         @Override
-        public void ifSome(Operator<? super V> op) {
+        public void whenSome(Operator<? super V> op) {
             verifyNotNullOperator(op);
             op.accept(value);
         }

@@ -123,30 +123,6 @@ public class FunctionsTest {
         }
     }
 
-    private static class ValueHolder<T> {
-
-        private T value;
-
-        private boolean occupied = false;
-
-        void forcePut(T value) {
-            this.value = value;
-            this.occupied = true;
-        }
-
-        void putValue(T value) throws Exception {
-            if (occupied) {
-                throw new Exception("Value is already occupied.");
-            }
-            this.value = value;
-            this.occupied = true;
-        }
-
-        public T getValue() {
-            return value;
-        }
-    }
-
     public static class OperatorTest {
 
         private FunctionsTest object;
