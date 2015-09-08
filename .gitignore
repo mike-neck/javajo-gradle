@@ -3,9 +3,10 @@
 *.jar
 
 # gradle directories
-.gradle/
 build/
 !gradle/wrapper/*.jar
+**/build/
+**/.gradle/
 
 # IntelliJ IDEA files
 *.ipr
