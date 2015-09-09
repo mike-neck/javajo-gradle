@@ -25,6 +25,66 @@ task my5thTask (type: SomeTypeTask) { doSomeConfiguration() } /* <5> */
 . `my1stTask` 〜 `my5thTask` をそれぞれ実行してみて下さい。
 ** スクリプトとから想像した動作と、実際の動作を比較して、何かおかしなことが発生していませんか？
 
+.Groovyによる簡易な記法
+[TIP]
+====
+
+Groovyではメソッドの多くが簡単に書けるようになっています。
+
+'''
+
+例えば標準出力に文字列を流すメソッド `System.out.println` はGroovyでは `println` に簡略化されています。
+
+[source,java]
+----
+System.out.println("This is " + name + ".");
+----
+
+[source,groovy]
+----
+println "This is ${name}."
+----
+
+'''
+
+また、setter/getterの呼び出しも簡略化されています。
+
+[source,java]
+----
+myTask.setMessage("hello");
+System.out.println(myTask.getMessage());
+----
+
+[source,groovy]
+----
+myTask.message = 'hello' /* -> setter呼び出し */
+println myTask.message   /* -> getter呼び出し */
+----
+
+なお、Javaのsetter/getterは明示的にあるいはLombokなどの黒魔術によって生やす必要がありますが、Groovyではアクセスレベルをパッケージプライベート以上にすると勝手に生えてきます。
+
+[source,java]
+----
+public class MyTask extends DefaultTask {
+  String message;
+  public String getMessage() {
+    return message;
+  }
+  @TaskAction
+  public void work() {}
+}
+----
+
+[source,groovy]
+----
+class MyTask extends DefaultTask {
+  String message /* -> getter/setterが自動で生成される */
+  @TaskAction void work() {}
+}
+----
+
+====
+
 = Configuration と Action
 
 `my2ndTask` と `my3rdTask` の挙動に違和感を抱かれた方が多いのではないでしょうか。
