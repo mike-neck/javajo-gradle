@@ -193,7 +193,7 @@ assert list == ['MAVEN', 'GRADLE']
 
 ====
 
-= 演習
+= 演習1
 
 * `task-projects/print-message` プロジェクトの `build.gradle` にConfiguration Phaseに現在時刻を表示するタスク `timeOfConf` とタスク実行時の時刻を表示する `timeOfExec` タスクを作ってみましょう。
 ** 表示する時刻は `yyyy-MM-dd HH:mm:ss.SSS` の形式で表示してください。
@@ -212,3 +212,80 @@ assert new Date(0).format('yyyy-MM-dd HH:mm:ss.SSS') == '1970-01-01 09:00:00.000
 ----
 
 ====
+
+= Configurationで設定できる基本的な項目
+
+すべてのタスクに共通して、Configuration Closureで設定できる項目には次のようなものがあります。
+
+.Taskに共通する設定項目
+|===
+|プロパティ |型 |内容
+
+|`group`
+|`String`
+|タスクが所属するグループ名
+
+|`description`
+|`String`
+|タスクの説明
+
+|`type`
+|`Class<? extends Task>`
+|タスクのひな形
+
+|`dependsOn`
+|`Object...`
+|タスクが依存するタスク(例：jarに固める前にjavaのコンパイルが必要など)
+|===
+
+= 演習2
+
+. `my1stTask` 〜 `my5thTask` が `my2ndTask` と同じ `my task` グループに所属するように設定を記述してください。
+. 演習1で作成した `timeOfExec` タスクが `my3rdTask` の後に実行されるように設定してください。
+
+.Configurationの記述方法
+[TIP]
+====
+
+Configurationを記述する方法は3通りあります。
+
+. `Map<String, Object>` で設定する方法
+. `Closure` で設定する方法
+. プロパティ(setter)で設定する方法
+
+.`Map<String, Object>` で設定する方法
+****
+
+[source,groovy]
+----
+task myTask(description: 'Description for myTask.')
+----
+
+****
+
+.`Closure` で設定する方法
+****
+
+[source,groovy]
+----
+task myTask {
+  description = 'Description for myTask.'
+}
+----
+
+****
+
+.プロパティ(setter)で設定する方法
+****
+
+[source,groovy]
+----
+task myTask
+
+myTask.description = 'Description for myTask.'
+----
+
+****
+
+====
+
