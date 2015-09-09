@@ -167,3 +167,29 @@ Adds the given closure to the end of this task's action list. <1>
 * Task Action
 ** `task name << {/* task action(execution phase) */}`
 
+.`Closure` って何？
+[TIPS]
+====
+
+先ほどから `Closure` というクラス(オブジェクト)が出てきていますが、これは何でしょう？
+
+簡単に言うとJavaの `java.util.function.Function<T, R>` みたいなものです。
+
+記述の仕方によっては `java.util.function.BiFunction<T, U, R>` のようにも、 `java.util.function.Predicate<T>` のようにも、 `java.lang.Runnable` のようにも、 `java.util.concurrent.Callable<V>` のようにも使えます。
+
+Groovy2.2からはJava 8の `Stream` の各種中間操作などに渡される `Function`、 `Predicate` などに `Closure` を渡すことができるようになっています。
+
+[source, groovy]
+----
+def list = Stream.of('ant', 'maven', 'sbt', 'gradle')
+        .filter {it.size() > 3}
+        .map {it.toUpperCase()}
+        .collect(Collectors.toList())
+
+assert list == ['MAVEN', 'GRADLE']
+----
+
+また、 `Closure` の中では渡された引数は `it` で参照することが可能です。
+
+====
+
