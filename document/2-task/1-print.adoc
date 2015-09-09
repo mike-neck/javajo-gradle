@@ -1,0 +1,30 @@
+= Taskの作り方
+
+タスクは `Project` オブジェクトの `task` というメソッドによって作ることができます。(正確に言うと `TaskContainer` というオブジェクトに委譲されている `task` メソッドによって作る)
+
+[source, groovy]
+----
+task my1stTask /* <1> */
+task my2ndTask { doSomeConfiguration() } /* <2> */
+task my3rdTask << { doSomeAction() } /* <3> */
+task my4thTask (type: SomeTypeTask) /* <4> */
+task my5thTask (type: SomeTypeTask) { doSomeConfiguration() } /* <5> */
+----
+<1> `my1stTask` 何もしないタスクを作ります。
+<2> `my2ndTask` 何らかの設定が施されるけど、何もしないタスクを作ります。
+<3> `my3rdTask` `doSomeAction` に記述されている処理をおこなうタスクを作ります。
+<4> `my4thTask` `SomeTypeTask` 型のタスクを作成します。
+<5> `my5thTask` `SomeTypeTask` 型のタスクを生成して、何らかの設定を行います。
+
+== 演習
+
+.それぞれのタスクを実行してみましょう。
+. `task-projects/print-message` ディレクトリーに移動してください。
+. `build.gradle` ファイルを読んでみましょう。
+. `tasks` タスクを実行して、 `my1stTask` 〜 `my5thTask` があることを確認して下さい。
+. `my1stTask` 〜 `my5thTask` をそれぞれ実行してみて下さい。
+** スクリプトとから想像した動作と、実際の動作を比較して、何かおかしなことが発生していませんか？
+
+= Configuration と Action
+
+

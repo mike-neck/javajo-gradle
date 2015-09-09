@@ -1,0 +1,39 @@
+apply plugin: 'base'
+
+// 1. 何もしないタスク
+
+task my1stTask
+
+// 2. 設定は施しているけど、何もしない my2ndTask
+
+task my2ndTask {
+    println "doing configuration for task[${name}]"
+    group = 'my task'
+    description 'do nothing'
+}
+
+// 3. 何らかの処理を行うタスク
+
+task my3rdTask << {
+    println "This is ${name}."
+}
+
+// 4. あるタイプのタスク
+
+class MyTask extends DefaultTask {
+    String message = 'running'
+    @TaskAction
+    void doSomething() {
+        logger.lifecycle "{} {}, on {}", message, name, new Date().format('yyyy-MM-dd HH:mm:ss')
+    }
+}
+
+task my4thTask(type: MyTask)
+
+// 5. あるタイプのタスクに設定も施す
+
+task my5thTask(type: MyTask) {
+    group = 'my task'
+    description = 'doing something'
+    message = 'hello'
+}
