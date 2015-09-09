@@ -126,10 +126,9 @@ dependencies {
 }
 ----
 
-'''
-
-*Groovyの文字列？*
-
+.Groovyの文字列？
+[TIP]
+====
 Groovyでは文字列(`String`)はシングルクオート `&#39;` で囲むことで記述できます。
 
 [source,groovy]
@@ -142,11 +141,11 @@ Groovyでダブルクオート `&quot;` で囲まれた文字列は `GString` �
 
 [source,groovy]
 ----
-// 文字列中で${}に記述された式を評価して文字列に埋め込むことができる
+/* 文字列中で${}に記述された式を評価して文字列に埋め込むことができる */
 String tokyoToKyoto = "$tokyo-${kyoto}" /* -> 東京-京都 */
 ----
 
-'''
+====
 
 === 依存性管理
 
@@ -170,21 +169,24 @@ repositories {
 ** `PasswordCredential` - ベーシック認証情報を指定します。
 *** `username` - ベーシック認証のユーザー名を指定します。
 *** `password` - ベーシック認証のパスワードを指定します。
-** `AwsCredential` - AWSの認証情報を指定します(S3をレポジトリーに使っている場合)
-*** `key` - AWSのアクセスキーを指定します
-*** `secret` - AWSのアクセスシークレットを指定します
+** `AwsCredentials` - AWSの認証情報を指定します(S3をレポジトリーに使っている場合)
+*** `accessKey` - AWSのアクセスキーを指定します
+*** `secretKey` - AWSのシークレットキーを指定します
 
 '''
 
-*ユーザー認証の情報はどこに保存しておくべき？*
+.ユーザー認証の情報はどこに保存しておくべき？
+[IMPORTANT]
+====
 
-Gradleはプロジェクトの評価前に設定情報を集めます。その際に下記の順番で値を集めていきます。
+認証情報をビルドスクリプトに直接書いておくと、危険です。また、複数のビルドスクリプトに直接書いてあると、認証情報の管理も煩わしくなります。
 
-. `$HOME/.gradle/gradle.properties`
-. `project/gradle.properties`
+一般的にこのような認証情報はビルドスクリプトとは別のファイルに保管します。
 
-ユーザー認証情報などの他人には使われたくない情報は1.の `$HOME/.gradle/gradle.properties` に保存するべきです。
+`$GRADLE_USER_HOME/gradle.properties`(もし、 `$GRADLE_USER_HOME` が設定されていない場合は `$HOME/.gradle/gradle.properties`)ファイルはマシン内にある複数のプロジェクトで共有できるプロパティファイルです。
 
-また、プロパティのキーと値の一覧を表示する `properties` タスクは `$HOME/.gradle/gradle.properties` の情報も表示するので、絶対に人前では実行しないでください。
+このファイルに認証情報を保存しておくのがよいでしょう。
 
-'''
+CAUTION: プロパティのキーと値の一覧を表示する `properties` タスクは `$HOME/.gradle/gradle.properties` の情報も表示するので、絶対に人前では実行しないでください。
+
+====
