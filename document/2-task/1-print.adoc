@@ -27,4 +27,83 @@ task my5thTask (type: SomeTypeTask) { doSomeConfiguration() } /* <5> */
 
 = Configuration と Action
 
+`my2ndTask` と `my3rdTask` の挙動に違和感を抱かれた方が多いのではないでしょうか。
+
+.同じ標準出力に流す `println` メソッドを利用しているにもかかわらず...
+* `my2ndTask` の出力内容はすべてのタスクで表示される。
+* `my3rdTask` の出力内容は `my3rdTask` 実行時のみ表示される。
+
+== Gradleのビルドフェーズ
+
+.Gradleのビルドは次の順序で実行されます。
+. Initialization (初期化フェーズ)
+** プロパティの読み込み
+** 設定(`settings.gradle`)の読み込み
+** 関連するすべての `Project` オブジェクトを構築(サブプロジェクトなどの情報をあつめて構築)
+. Configuration (設定フェーズ)
+** 構築された `Project` オブジェクトに対して `build.gradle` に記述された設定を適用していく
+** タスクの設定を施す
+** 依存ライブラリーやタスクの依存関係の情報を収集・構築
+. Execution (実行フェーズ)
+** 指定されたタスクを抽出して、Task Actionを実行する
+
+== Configuration と Action 再び
+
+再び `my2ndTask` と `my3rdTask` の定義を見てみましょう。
+
+.`my2ndTask`
+****
+
+[source,groovy]
+----
+task my2ndTask {
+  println "something"
+  group = 'my task'
+  /* and so on */
+}
+----
+
+****
+
+.`my3rdTask`
+****
+
+[source,groovy]
+----
+task my3rdTask << {
+  println 'something'
+}
+----
+
+****
+
+違いは `my3rdTask` の方ではブロック `{}` の前に演算子 `<<` が付いていることです。
+
+演算子 `<<` はGroovyでは `leftShift` というメソッドで定義されるメソッドで、これの具体的な実装は内部的に `doLast` メソッドを呼び出しているだけです。
+
+そして、 `doLast` メソッドの定義はこのようなものです
+
+[quote, 'https://docs.gradle.org/current/dsl/org.gradle.api.Task.html#org.gradle.api.Task:doLast(groovy.lang.Closure)[Task - Gradle DSL]']
+----
+Adds the given closure to the end of this task's action list. <1>
+----
+<1> (意訳)タスクの処理リストの最後に与えられた新しいアクションを追加する。
+
+したがって、ここで使われている `Closure`(`{}`)はTask Actionとなります。
+
+'''
+
+一方の `my2ndTask` の記述は上の方でちょこっと書いた、 `TaskContainer` の `create(String name, Closure configureClosure)` を呼び出す記法です。
+
+引数の名前から想像できる通り、ここで使われている `Closure`(`{}`)は Configuration フェーズで実行される `Closure` となります。
+
+=== Configuration と Action 結論
+
+`Closure` の位置について注意を払ってTaskの定義を記述するようにしましょう。
+
+.`Closure` の位置と実行されるフェーズ
+* Configuration
+** `task name {/* configuration(configuration phase) */}`
+* Task Action
+** `task name << {/* task action(execution phase) */}`
 
