@@ -78,10 +78,10 @@ apply plugin: 'eclipse'
 ----
 
 * Gradleではビルドに必要な機能を小さなプラグインの形式で提供しており、それらの組み合わせによってビルドを実現する。
-* 例
-** Javaのビルドが必要なら`java`プラグイン
-** IntelliJ IDEAで取り込むために`idea`プラグイン
-** Web archiveをビルドしたい場合は`war`プラグイン
+** 例
+*** Javaのビルドが必要なら `java` プラグイン
+*** IntelliJ IDEAで取り込むために `idea` プラグイン
+*** Web archiveをビルドしたい場合は `war` プラグイン
 
 === プロジェクト情報
 
@@ -101,11 +101,11 @@ defaultTasks 'clean', 'build'
 
 * Gradleはタスクの集合体なので、Gradle起動時に実行するタスクを指定する必要があります。
 * Gradle起動時に実行するタスクを指定していない場合には、デフォルトタスクに設定されたタスクが実行されるようになります。
-* デフォルトのデフォルトタスクは`help`タスクです。
+* デフォルトのデフォルトタスクは `help` タスクです。
 
 === Extra Properties
 
-何らかの変数を利用したい場合は`ext`というオブジェクト(プロパティを管理しているExtra Propertiesというオブジェクト)に値を格納することで利用可能になります。
+何らかの変数を利用したい場合は `ext` というオブジェクト(プロパティを管理しているExtra Propertiesというオブジェクト)に値を格納することで利用可能になります。
 
 [source,groovy]
 ----
@@ -130,7 +130,7 @@ dependencies {
 
 *Groovyの文字列？*
 
-Groovyでは文字列(`String`)はシングルクオート`&#39;`で囲むことで記述できます。
+Groovyでは文字列(`String`)はシングルクオート `&#39;` で囲むことで記述できます。
 
 [source,groovy]
 ----
@@ -138,12 +138,12 @@ String tokyo = '東京'
 String kyoto = '京都'
 ----
 
-Groovyでダブルクオート`&quot;`で囲まれた文字列は`GString`というクラスのオブジェクトで、`String`を拡張した便利なオブジェクトです。
+Groovyでダブルクオート `&quot;` で囲まれた文字列は `GString` というクラスのオブジェクトで、 `String` を拡張した便利なオブジェクトです。
 
 [source,groovy]
 ----
 // 文字列中で${}に記述された式を評価して文字列に埋め込むことができる
-String tokyoToKyoto = "$tokyo-${kyoto}"
+String tokyoToKyoto = "$tokyo-${kyoto}" /* -> 東京-京都 */
 ----
 
 '''
@@ -161,18 +161,19 @@ repositories {
 }
 ----
 
-* `mavenCentral()`メソッド - 検索対象のレポジトリーにMavenセントラルを追加します。
-* `jcenter()`メソッド - 検索対象のレポジトリーにjcenter(Bintrayが提供しているレポジトリー)を追加します。
-* `mavenLocal()`メソッド - 検索対象のレポジトリーにローカルの`.m2`ディレクトリーを追加します。
-* `maven{}`ブロック - 上記以外のレポジトリーを追加するための情報を設定します。
+* `mavenCentral()` メソッド - 検索対象のレポジトリーにMavenセントラルを追加します。
+* `jcenter()` メソッド - 検索対象のレポジトリーにjcenter(Bintrayが提供しているレポジトリー)を追加します。
+* `mavenLocal()` メソッド - 検索対象のレポジトリーにローカルの `.m2` ディレクトリーを追加します。
+* `maven{}` ブロック - 上記以外のレポジトリーを追加するための情報を設定します。
 * `url` - レポジトリーのURLを指定します。
 * `credentials` - 認証情報を指定します。
 ** `PasswordCredential` - ベーシック認証情報を指定します。
-** `username` - ベーシック認証のユーザー名を指定します。
-** `password` - ベーシック認証のパスワードを指定します。
+*** `username` - ベーシック認証のユーザー名を指定します。
+*** `password` - ベーシック認証のパスワードを指定します。
 ** `AwsCredential` - AWSの認証情報を指定します(S3をレポジトリーに使っている場合)
-** `key` - AWSのアクセスキーを指定します
-** `secret` - AWSのアクセスシークレットを指定します
+*** `key` - AWSのアクセスキーを指定します
+*** `secret` - AWSのアクセスシークレットを指定します
+
 '''
 
 *ユーザー認証の情報はどこに保存しておくべき？*
@@ -182,8 +183,8 @@ Gradleはプロジェクトの評価前に設定情報を集めます。その�
 . `$HOME/.gradle/gradle.properties`
 . `project/gradle.properties`
 
-ユーザー認証情報などの他人には使われたくない情報は1.の`$HOME/.gradle/gradle.properties`に保存するべきです。
+ユーザー認証情報などの他人には使われたくない情報は1.の `$HOME/.gradle/gradle.properties` に保存するべきです。
 
-また、プロパティのキーと値の一覧を表示する`properties`タスクは`$HOME/.gradle/gradle.properties`の情報も表示するので、絶対に人前では実行しないでください。
+また、プロパティのキーと値の一覧を表示する `properties` タスクは `$HOME/.gradle/gradle.properties` の情報も表示するので、絶対に人前では実行しないでください。
 
 '''
