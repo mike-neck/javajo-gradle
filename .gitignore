@@ -35,3 +35,6 @@ java-projects/init-project/no-type/**/*
 !java-projects/init-project/no-type/.gitkeep
 java-projects/init-project/scala-lib/**/*
 !java-projects/init-project/scala-lib/.gitkeep
+
+# to do management
+todo/

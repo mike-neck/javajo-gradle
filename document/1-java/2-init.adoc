@@ -1,30 +1,30 @@
-Gradleプロジェクトの作成
-===
+= Gradleプロジェクトの作成
 
-Gradleには[Build Init Plugin](https://docs.gradle.org/current/userguide/build_init_plugin.html)というGradleプロジェクトを生成するプラグインがあります。
+Gradleにはhttps://docs.gradle.org/current/userguide/build_init_plugin.html[Build Init Plugin]というGradleプロジェクトを生成するプラグインがあります。
 
 `mvn archetype:generate`に比べて圧倒的にテンプレートが少ないというより、機能不足すぎるわけですが、最低限のプロジェクト構成を生成することができます。
 
-なお、現在incubatingな機能なため、今後テンプレートタイプが詳細に指定できるようになるかもしれないし、taichiさんのQiitaの記事[Gradle で initタスクをカスタマイズする方法](http://qiita.com/taichi@github/items/a4caab3a31dd5949a045)にあるようにオレオレテンプレートを作る方法が一般的になるかもしれません。
+なお、現在incubatingな機能なため、今後テンプレートタイプが詳細に指定できるようになるかもしれないし、taichiさんのQiitaの記事http://qiita.com/taichi@github/items/a4caab3a31dd5949a045[Gradle で initタスクをカスタマイズする方法]にあるようにオレオレテンプレートを作る方法が一般的になるかもしれません。
 
 とりあえず、プロジェクトを作るのにいちいち`mkdir`コマンドを叩くのが面倒なときに使うとよいでしょう。
 
-演習
-===
+= 演習
 
-### 1. typeの指定なしでプロジェクトをinitする
+=== 1. typeの指定なしでプロジェクトをinitする
 
 `java-projects/init-project/no-type`ディレクトリーに移動して、次のコマンドを入力してください。
 
-```
+[source]
+----
 $ gradle init
-```
+----
 
----
+'''
 
 次のようなディレクトリーが作成されます。
 
-```
+[source]
+----
 .
 ├── build.gradle
 ├── gradle
@@ -34,7 +34,7 @@ $ gradle init
 ├── gradlew
 ├── gradlew.bat
 └── settings.gradle
-```
+----
 
 なお、この`init`タスクは
 
@@ -44,9 +44,9 @@ $ gradle init
 
 という、あまり意味のないものだけが生成されるちょっと悲しい機能です。
 
----
+'''
 
-### 2. java library type
+=== 2. java library type
 
 次は少しまともな`init`タスクを実行します。
 
@@ -54,15 +54,17 @@ $ gradle init
 
 次のコマンドを入力してください。
 
-```
+[source]
+----
 $ gradle init --type java-library
-```
+----
 
----
+'''
 
 次のようなディレクトリーが作成されます。
 
-```
+[source]
+----
 .
 ├── build.gradle
 ├── gradle
@@ -79,7 +81,7 @@ $ gradle init --type java-library
     └── test
         └── java
             └── LibraryTest.java
-```
+----
 
 この`init`で生成されるプロジェクトは次のようなものです。
 
@@ -92,9 +94,9 @@ $ gradle init --type java-library
 
 最初のtype指定なしよりはまともそうなプロジェクトですね。
 
----
+'''
 
-### 3. groovy library type
+=== 3. groovy library type
 
 次はGroovyタイプのテンプレートを作成します。
 
@@ -102,15 +104,17 @@ $ gradle init --type java-library
 
 次のコマンドを入力してください。
 
-```
+[source]
+----
 $ gradle init --type groovy-library
-```
+----
 
----
+'''
 
 次のようなディレクトリーが作成されます。
 
-```
+[source]
+----
 .
 ├── build.gradle
 ├── gradle
@@ -127,7 +131,7 @@ $ gradle init --type groovy-library
     └── test
         └── groovy
             └── LibraryTest.groovy
-```
+----
 
 この`init`で生成されるプロジェクトは次のようなものです。
 
@@ -137,7 +141,7 @@ $ gradle init --type groovy-library
 * テスト用のライブラリーに`spock`の`1.0-groovy-2.4`が用いられている
 * テスト用のライブラリーに`junit`の`4.12`が用いられている(transitive dependencyで実は指定する必要がないのは内緒だよ)
 
-### 4. Scala library type
+=== 4. Scala library type
 
 Gradleはsbtほど厳密ではない(らしい)けど、Scalaプロジェクトのビルドも可能です。
 
@@ -147,15 +151,17 @@ Gradleはsbtほど厳密ではない(らしい)けど、Scalaプロジェクト�
 
 次のコマンドを入力してください。
 
-```
+[source]
+----
 $ gradle init --type scala-library
-```
+----
 
----
+'''
 
 次のようなディレクトリーが作成されます。
 
-```
+[source]
+----
 .
 ├── build.gradle
 ├── gradle
@@ -172,7 +178,7 @@ $ gradle init --type scala-library
     └── test
         └── scala
             └── LibrarySuite.scala
-```
+----
 
 この`init`タスクで生成されるプロジェクトは次のようなものです。
 
@@ -182,11 +188,9 @@ $ gradle init --type scala-library
 * テスト用のライブラリーに`scalatest_2.11`のバージョン`2.2.5`が用いられている
 * テスト用のライブラリーに`junit`の`4.12`が用いられている
 * テストのランタイムライブラリーに`scala-xml_2.11`のバージョン`1.0.5`が用いられている
+'''
 
----
-
-テンプレート作成後
-===
+= テンプレート作成後
 
 混みいったプロジェクトでなければ、次のような作業の後にプロジェクトの作成がスムーズに行きます。
 
