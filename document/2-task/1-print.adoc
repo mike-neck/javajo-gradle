@@ -168,7 +168,7 @@ Adds the given closure to the end of this task's action list. <1>
 ** `task name << {/* task action(execution phase) */}`
 
 .`Closure` って何？
-[TIPS]
+[TIP]
 ====
 
 先ほどから `Closure` というクラス(オブジェクト)が出てきていますが、これは何でしょう？
@@ -193,3 +193,22 @@ assert list == ['MAVEN', 'GRADLE']
 
 ====
 
+= 演習
+
+* `task-projects/print-message` プロジェクトの `build.gradle` にConfiguration Phaseに現在時刻を表示するタスク `timeOfConf` とタスク実行時の時刻を表示する `timeOfExec` タスクを作ってみましょう。
+** 表示する時刻は `yyyy-MM-dd HH:mm:ss.SSS` の形式で表示してください。
+*** Configurationフェーズに処理を実行させるにはどう記述すればよいのでしょうか？
+*** Executionフェーズ(Task Action)に処理を実行させるにはどのように記述すればよいのでしょうか？
+
+.Groovyにおける時刻のフォーマット
+[TIP]
+====
+
+Groovyでは `Date` クラスが拡張されて、便利なメソッドが追加されています。
+
+[source,groovy]
+----
+assert new Date(0).format('yyyy-MM-dd HH:mm:ss.SSS') == '1970-01-01 09:00:00.000'
+----
+
+====
