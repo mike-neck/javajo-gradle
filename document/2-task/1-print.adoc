@@ -16,7 +16,7 @@ task my5thTask (type: SomeTypeTask) { doSomeConfiguration() } /* <5> */
 <4> `my4thTask` `SomeTypeTask` 型のタスクを作成します。
 <5> `my5thTask` `SomeTypeTask` 型のタスクを生成して、何らかの設定を行います。
 
-== 演習
+== 演習1
 
 .それぞれのタスクを実行してみましょう。
 . `task-projects/print-message` ディレクトリーに移動してください。
@@ -193,7 +193,7 @@ assert list == ['MAVEN', 'GRADLE']
 
 ====
 
-= 演習1
+= 演習2
 
 * `task-projects/print-message` プロジェクトの `build.gradle` にConfiguration Phaseに現在時刻を表示するタスク `timeOfConf` とタスク実行時の時刻を表示する `timeOfExec` タスクを作ってみましょう。
 ** 表示する時刻は `yyyy-MM-dd HH:mm:ss.SSS` の形式で表示してください。
@@ -238,10 +238,10 @@ assert new Date(0).format('yyyy-MM-dd HH:mm:ss.SSS') == '1970-01-01 09:00:00.000
 |タスクが依存するタスク(例：jarに固める前にjavaのコンパイルが必要など)
 |===
 
-= 演習2
+= 演習3
 
 . `my1stTask` 〜 `my5thTask` が `my2ndTask` と同じ `my task` グループに所属するように設定を記述してください。
-. 演習1で作成した `timeOfExec` タスクが `my3rdTask` の後に実行されるように設定してください。
+. 演習2で作成した `timeOfExec` タスクが `my3rdTask` の後に実行されるように設定してください。
 
 .Configurationの記述方法
 [TIP]
