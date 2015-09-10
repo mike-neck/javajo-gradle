@@ -1,0 +1,15 @@
+task-projects/
+├── output-text
+│   ├── build.gradle
+│   ├── input-text.txt
+│   └── output-text.iml
+├── print-message
+│   ├── build.gradle
+│   └── print-message.iml
+├── task-co-work
+│   └── task-co-work.iml
+├── task-projects.iml
+└── up-to-date
+    └── up-to-date.iml
+
+4 directories, 8 files

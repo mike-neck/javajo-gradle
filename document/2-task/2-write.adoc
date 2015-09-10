@@ -1,0 +1,83 @@
+= テキストファイルを書き出す
+
+タスクの作り方をここまで学習してきたので、次にテキストファイルを出力するようなタスクを作っていきます。
+
+`javajo-gradle/task-projects/output-text` ディレクトリーに移動してください。
+
+== `project.file` メソッド
+
+`File` を指定するために、Javaでは(Groovyでも)、 `new File(fileName)` とコンストラクターを呼びます。
+Gradleのスクリプトの中でも、この記法は有効ですが、あまり推奨できません。
+その代わりにプロジェクトからの相対パスを指定して `File` インスタンスを生成する `project.file` メソッドを使います。
+
+== テキストを書き出すタスク
+
+テキストファイルに書き出すタスクは次のように書くことができます。
+
+[source,groovy]
+----
+task firstText {
+  doLast {
+    file('first-text.txt').write('contents', 'UTF-8')
+  }
+}
+----
+
+== テキストを読み込むタスク
+
+テキストファイルを読み込むタスクは次のように書くことができます。
+
+[source,groovy]
+----
+task loadText {
+  doLast {
+    def text = file('input-text.txt').text
+    println text
+  }
+}
+----
+
+== 演習1
+
+`javajo-gradle/task-projects/output-text/build.gradle` の次のタスクの内容を確認しつつ、それぞれ実行してください。
+
+* `firstText` タスク
+* `loadText` タスク
+
+.Groovyのファイル操作
+[TIP]
+====
+
+Groovyの `java.io.File` にはJDK標準のメソッドの他に便利なメソッドが利用できます。
+
+
+.java.io.File
+|===
+|メソッド |戻り値 |引数 |内容
+
+|`write`
+|`void`
+|`String text`
+|ファイルに文字列を書き出す
+
+|`write`
+|`void`
+|`String text`, `String encoding`
+|ファイルに文字列を指定したエンコーディングで書き出す
+
+|`getText`
+|`String`
+|なし
+|ファイルの内容を読み込む
+
+|`getText`
+|`String`
+|`String encoding`
+|指定したエンコーディングでファイルの内容を読み込む
+|===
+
+さらに、Groovyではgetter/setterの呼び出しがフィールドアクセスのように簡略化できますので、 `file.text` のような簡単な書き方でファイルの内容を読み込むことができます。
+
+====
+
+

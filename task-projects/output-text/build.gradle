@@ -1,0 +1,20 @@
+apply plugin: 'base'
+
+/*
+このディレクトリー(task-projects/output-text)にfirst-text.txtというテキストファイルを出力するタスク
+ */
+task firstText {
+    doLast {
+        file('first-text.txt').write('最初のテキストファイルを書き出すタスクから書き出されたファイルです', 'UTF-8')
+    }
+}
+
+/*
+このディレクトリーにあるinput-text.txtというテキストファイルから内容を読み込んで表示するタスク
+ */
+task loadText {
+    doLast {
+        def text = file('input-text.txt').text
+        println text
+    }
+}
