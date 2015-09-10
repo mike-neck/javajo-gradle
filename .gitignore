@@ -38,3 +38,6 @@ java-projects/init-project/scala-lib/**/*
 
 # to do management
 todo/
+
+# exercise answer file
+answer.gradle

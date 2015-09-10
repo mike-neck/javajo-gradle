@@ -1,5 +1,9 @@
 apply plugin: 'base'
 
+if (file('answer.gradle').exists()) {
+    apply from: 'answer.gradle'
+}
+
 /*
 このディレクトリー(task-projects/output-text)にfirst-text.txtというテキストファイルを出力するタスク
  */

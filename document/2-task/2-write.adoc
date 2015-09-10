@@ -80,4 +80,89 @@ Groovyの `java.io.File` にはJDK標準のメソッドの他に便利なメソ�
 
 ====
 
+== 演習2
 
+`javajo-gradle/task-projects/output-text/build.gradle` ファイルに、`javajo-gradle/task-projects/output-text/files` ディレクトリー以下のすべてのファイルの一覧を `javajo-gradle/task-projects/output-text/` からの相対パスに変換して `all-files.txt` というファイルに書き出すタスク `listAllFiles` タスクを作成してください。
+
+.`file` 系メソッドをもう少し
+[TIP]
+====
+
+`Project` オブジェクトが提供する `file` 系メソッドには次のようなものがあります。
+
+
+.`file` 系メソッド
+|===
+|メソッド名 |戻り値 |引数 |内容
+
+|`file`
+|`File`
+|`Object path`
+|単一の `File` インスタンスを返す
+
+|`files`
+|`ConfigurableFileCollection`
+|`Object... paths`
+|引数に渡されたファイルのリストを返す
+
+|`fileTree`
+|`ConfigurableFileTree`
+|`Object baseDir`
+|与えられたディレクトリーを起点とするファイルツリー(リストとして扱える)
+|===
+
+====
+
+.Groovyのコレクション操作
+[TIP]
+====
+
+Groovyでは `List` や `Set` などのコレクション操作を簡単にするためのメソッドが用意されています。
+
+.`collect`
+* Java SE8の `Stream` でいうところの、 `map` 操作に該当します。
+
+[source,groovy]
+----
+[1,2,3,4,5].collect {
+  it * it
+} /* -> [1, 4, 9, 16, 25] */
+
+['Jorge', 'Steve', 'Michael', 'Christine'].collect {
+  it.toUpperCase()
+} /* -> ['JORGE', 'STEVE', 'MICHAEL', 'CHRISTINE'] */
+----
+
+.`findAll`
+* Java SE8の `Stream` でいうところの、 `filter` 操作に該当します。
+
+[source,groovy]
+----
+[1, 2, 3, 4, 5, 6, 7, 8].findAll {
+  it > 3 && it % 2 == 0
+} /* -> [4, 6, 8] */
+
+['Java', 'Groovy', 'Scala', 'Clojure', 'JRuby'].findAll {
+  it.endsWith('a')
+} /* -> ['Java', 'Scala'] */
+----
+
+.`join`
+* Java SE8の `Stream` でいうところの、 `collect(Collectors.joining())` 操作に該当します。
+
+[source,groovy]
+----
+['Java', 'Groovy', 'Scala', 'Clojure', 'JRuby'].join(', ')
+/* -> 'Java, Groovy, Scala, Clojure, JRuby' */
+----
+
+====
+
+== 演習3(ちょっとむずかしい)
+
+`java-projects/normal-project/src` ディレクトリー以下のファイル一覧を `java-projects/normal-project` からの相対パスで `java-sources.txt` ファイルに書き出すタスク `listJavaSources` タスクを作成してください。
+
+.ヒント
+* ルートのプロジェクト(`javajo-gradle`)は、プロパティ `rootProject` で参照できます。
+* ルートプロジェクトから `java-projects` サブプロジェクトの `normal-project` サブプロジェクトは、 `project(':java-projects:normal-project')` で取得できます。
+* 特定のディレクトリー以下のファイル全てを集めるメソッドは `project.fileTree` メソッドです。
