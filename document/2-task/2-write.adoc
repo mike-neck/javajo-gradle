@@ -270,5 +270,7 @@ text.eachLine {
 
 .ヒント
 * ルートのプロジェクト(`javajo-gradle`)は、プロパティ `rootProject` で参照できます。
+** ただし、`output-text` で `gradle` を実行する場合は `rootProject` が `output-text` になってしまうので、 `file('../..')` で `javajo-gradle` ディレクトリーを取得する必要があります。
 * ルートプロジェクトから `java-projects` サブプロジェクトの `normal-project` サブプロジェクトは、 `project(':java-projects:normal-project')` で取得できます。
+** 上記で `rootProject` が `output-text` だった場合は、 `file('../../java-projects/normal-project')` でディレクトリーを取得します。
 * 特定のディレクトリー以下のファイル全てを集めるメソッドは `project.fileTree` メソッドです。
