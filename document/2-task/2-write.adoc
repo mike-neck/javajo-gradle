@@ -39,7 +39,7 @@ task loadText {
 
 == 演習1
 
-`javajo-gradle/task-projects/output-text/build.gradle` の次のタスクの内容を確認しつつ、それぞれ実行してください。
+`build.gradle` の次のタスクの内容を確認しつつ、それぞれ実行してください。
 
 * `firstText` タスク
 * `loadText` タスク
@@ -82,34 +82,55 @@ Groovyの `java.io.File` にはJDK標準のメソッドの他に便利なメソ�
 
 == 演習2
 
-`javajo-gradle/task-projects/output-text/build.gradle` ファイルに、`javajo-gradle/task-projects/output-text/files` ディレクトリー以下のすべてのファイルの一覧を `javajo-gradle/task-projects/output-text/` からの相対パスに変換して `all-files.txt` というファイルに書き出すタスク `listAllFiles` タスクを作成してください。
+`build.gradle` ファイルにプログラミング言語の名前を5つ改行で区切って `languages.txt` というファイルに書き出す `langs` というタスクを作成してください。
 
-.`file` 系メソッドをもう少し
+.出力例
+[source,txt]
+----
+Java
+Groovy
+Scala
+Python
+Ruby
+----
+
+.Groovyのコレクション
 [TIP]
 ====
 
-`Project` オブジェクトが提供する `file` 系メソッドには次のようなものがあります。
+Groovyでは簡単に `java.util.List` 、 `java.util.Map` のインスタンスを作ることができます。
 
+.`java.util.List`
+[source,groovy]
+----
+List<Integer> numbers = [1, 2, 3, 4, 5]
+List<String> langs = [
+    'Java', 'Groovy',
+    'Scala', 'Python',
+    'Ruby', 'JavaScript', 'C'
+    'C++', 'Objective-C'
+]
+List<String> empty = []
+----
 
-.`file` 系メソッド
-|===
-|メソッド名 |戻り値 |引数 |内容
+.`java.util.Map`
+[source,groovy]
+----
+Map<String, String> prefectures = [tokyo: '東京', kyoto: '京都', osaka: '大阪']
+Map<Integer, String> prefs = [
+    12: '千葉', 13: '東京',
+    14: '神奈川']
+Map<String, String> empty = [:]
+----
 
-|`file`
-|`File`
-|`Object path`
-|単一の `File` インスタンスを返す
+なお、 `java.util.Set` のインスタンスを作る場合は一工夫が必要です。
 
-|`files`
-|`ConfigurableFileCollection`
-|`Object... paths`
-|引数に渡されたファイルのリストを返す
-
-|`fileTree`
-|`ConfigurableFileTree`
-|`Object baseDir`
-|与えられたディレクトリーを起点とするファイルツリー(リストとして扱える)
-|===
+.`java.util.Set`
+[source, groovy]
+----
+Set<Integer> numbers = [1, 2, 3, 4, 5] as Set
+Set<String> langs = ['Java', 'Groovy', 'Scala'] as Set<String>
+----
 
 ====
 
@@ -158,7 +179,54 @@ Groovyでは `List` や `Set` などのコレクション操作を簡単にす�
 
 ====
 
-== 演習3(ちょっとむずかしい)
+== 演習3
+
+先ほど出力した `languages.txt` ファイルを読み込み、マークダウンのリスト形式に変換して `languages.md` ファイルに出力する `langsToMd` タスクを `build.gradle` の中に作成してください。
+
+.出力例
+[source,groovy]
+----
+* Java
+* Groovy
+* Scala
+* Python
+* Ruby
+----
+
+== 演習4(結構ハイレベル)
+
+`build.gradle` ファイルに、`javajo-gradle/task-projects/output-text/files` ディレクトリー以下のすべてのファイルの一覧を`all-files.txt` というファイルに書き出すタスク `listAllFiles` タスクを作成してください。
+
+.`file` 系メソッドをもう少し
+[TIP]
+====
+
+`Project` オブジェクトが提供する `file` 系メソッドには次のようなものがあります。
+
+
+.`file` 系メソッド
+|===
+|メソッド名 |戻り値 |引数 |内容
+
+|`file`
+|`File`
+|`Object path`
+|単一の `File` インスタンスを返す
+
+|`files`
+|`ConfigurableFileCollection`
+|`Object... paths`
+|引数に渡されたファイルのリストを返す
+
+|`fileTree`
+|`ConfigurableFileTree`
+|`Object baseDir`
+|与えられたディレクトリーを起点とするファイルツリー(リストとして扱える)
+|===
+
+====
+
+== 演習5(ちょっとむずかしい)
 
 `java-projects/normal-project/src` ディレクトリー以下のファイル一覧を `java-projects/normal-project` からの相対パスで `java-sources.txt` ファイルに書き出すタスク `listJavaSources` タスクを作成してください。
 
