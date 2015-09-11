@@ -1,0 +1,72 @@
+= タスクの入力と出力を定義する
+
+タスクの入力と出力の設定とタスクの `UP-TO-DATE`(既に完了)について学習します。
+
+`task-projects/up-to-date` ディレクトリーに移動してください。
+
+'''
+
+先ほどまでのテキスト出力タスクを実行している時に、間違えてやり直しなどが発生するたびに、 `rm` コマンド(あるいはファインダーからファイル削除あるいはウィンドウからファイル削除)をしていたと思います。
+
+しかし、タスクの出力ファイルを設定しておくことで、下記のコマンドで消すことができるようになります。
+
+[source,bash]
+----
+./gradlew cleanTaskName
+----
+
+== タスクの出力の設定
+
+タスクの出力ファイルの設定は次の二通りで行えます。
+
+.タスクの出力ファイルの設定-1
+[source,groovy]
+----
+task langs {
+  def outputFile = file('languages.txt')
+  /* outputs.file で定義する */
+  outputs.file outputFile
+  doLast {
+    def contents = [
+        'Java', 'Groovy', 'Scala',
+        'Clojure', 'JRuby'
+    ].join('\n')
+    /* ファイルへの書き出しは必要です */
+    outputFile.write(contents, 'UTF-8')
+  }
+}
+----
+
+.タスクの出力ファイルの設定-2
+[source,groovy]
+----
+task osAndLang {
+  def matrix = ['windows', 'linux', 'osx'].collect {os ->
+    ['Java', 'Groovy', 'Scala'].collect {lang ->
+      [os: os, lang: lang]
+    }
+  }.flatten()
+  def outputFiles = matrix.collect {
+    file("conbination/${it.os}${it.lang}.txt")
+  }
+  /* 複数のファイルを出力する場合は outputs.files で定義する */
+  outputs.files outputFiles
+  doLast {
+    if (!file('conbination').exists()) {
+      file('conbination').mkdirs()
+    }
+    matrix.each {
+      file("conbination/${it.os}${it.lang}.txt")
+          .write("${it.os} - ${it.lang}", 'UTF-8')
+    }
+  }
+}
+----
+
+=== 演習1
+
+. `task-projects/up-to-date` ディレクトリーに移動して、上記の `langs` タスク、 `osAndLang` タスクを実行してください。
+** それぞれ `outputs.file` もしくは `outputs.files` で指定したファイルが出力されていることを確認して下さい。
+. `cleanLangs` と `cleanOsAndLang` タスクを実行してください。
+** 1.で作成されたファイルが削除されていることを確認して下さい。
+

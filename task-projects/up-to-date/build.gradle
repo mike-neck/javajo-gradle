@@ -1,0 +1,37 @@
+apply plugin: 'base'
+
+task langs {
+    def outputFile = file('languages.txt')
+    /* outputs.file で定義する */
+    outputs.file outputFile
+    doLast {
+        def contents = [
+                'Java', 'Groovy', 'Scala',
+                'Clojure', 'JRuby'
+        ].join('\n')
+        // ファイルへの書き出しは必要です
+        outputFile.write(contents, 'UTF-8')
+    }
+}
+
+task osAndLang {
+    def matrix = ['windows', 'linux', 'osx'].collect {os ->
+        ['Java', 'Groovy', 'Scala'].collect {lang ->
+            [os: os, lang: lang]
+        }
+    }.flatten()
+    def outputFiles = matrix.collect {
+        file("conbination/${it.os}${it.lang}.txt")
+    }
+    /* outputs.files で定義する */
+    outputs.files outputFiles
+    doLast {
+        if (!file('conbination').exists()) {
+            file('conbination').mkdirs()
+        }
+        matrix.each {
+            file("conbination/${it.os}${it.lang}.txt")
+                    .write("${it.os} - ${it.lang}", 'UTF-8')
+        }
+    }
+}
