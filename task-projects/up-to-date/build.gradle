@@ -1,5 +1,9 @@
 apply plugin: 'base'
 
+if (file('answer.gradle').exists()) {
+    apply from: 'answer.gradle'
+}
+
 task langs {
     def outputFile = file('languages.txt')
     /* outputs.file で定義する */
@@ -32,6 +36,56 @@ task osAndLang {
         matrix.each {
             file("conbination/${it.os}${it.lang}.txt")
                     .write("${it.os} - ${it.lang}", 'UTF-8')
+        }
+    }
+}
+
+task showLanguages {
+    inputs.file 'language-list.txt'
+    doLast {
+        println file('language-list.txt').text
+    }
+}
+
+task langTypes {
+    def dir = "${projectDir}/"
+    inputs.files fileTree('langs')
+    doLast {
+        fileTree('langs').collect {
+            "${it}".replace(dir, '')
+        }.each {
+            println it
+        }
+    }
+}
+
+task langTypesByDir {
+    def dir = "${projectDir}/"
+    inputs.dir file('langs')
+    doLast {
+        fileTree('langs').collect {
+            "${it}".replace(dir, '')
+        }.each {
+            println it
+        }
+    }
+}
+
+task showLanguagesAsSource {
+    inputs.source 'language-list.txt'
+    doLast {
+        println file('language-list.txt').text
+    }
+}
+
+task langTypesBySourceDir {
+    def dir = "${projectDir}/"
+    inputs.sourceDir file('langs')
+    doLast {
+        fileTree('langs').collect {
+            "${it}".replace(dir, '')
+        }.each {
+            println it
         }
     }
 }

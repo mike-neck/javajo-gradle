@@ -19,7 +19,7 @@
 
 タスクの出力ファイルの設定は次の二通りで行えます。
 
-.タスクの出力ファイルの設定-1
+.タスクの出力ファイルの設定-1 出力ファイルがひとつの場合は `outputs.file` にファイルのパス文字列もしくは `File` オブジェクトを渡す
 [source,groovy]
 ----
 task langs {
@@ -37,7 +37,7 @@ task langs {
 }
 ----
 
-.タスクの出力ファイルの設定-2
+.タスクの出力ファイルの設定-2 複数の出力ファイルがある場合は `outputs.files` に配列またはコレクションで渡す
 [source,groovy]
 ----
 task osAndLang {
@@ -63,6 +63,10 @@ task osAndLang {
 }
 ----
 
+'''
+
+この他、特定のディレクトリーにファイルを出力する場合に用いる `outputs.dir` というメソッドもあります。
+
 === 演習1
 
 . `task-projects/up-to-date` ディレクトリーに移動して、上記の `langs` タスク、 `osAndLang` タスクを実行してください。
@@ -70,3 +74,45 @@ task osAndLang {
 . `cleanLangs` と `cleanOsAndLang` タスクを実行してください。
 ** 1.で作成されたファイルが削除されていることを確認して下さい。
 
+== タスクの入力の設定
+
+タスクの入力の設定には複数の方法がありますので、2つほど紹介します。
+
+.タスクの入力の設定-1 入力ファイルが1つの場合は、 `inputs.file` にファイルへのパス文字列または `File` オブジェクトを渡す
+[source,groovy]
+----
+task showLanguages {
+  inputs.file 'language-list.txt'
+  doLast {
+    println file('language-list.txt').text
+  }
+}
+----
+
+.タスクの入力の設定-2 入力ファイルが複数ある場合は、 `inputs.files` に配列もしくはコレクションで渡す
+[source,groovy]
+----
+task langTypes {
+  def dir = "${projectDir}/"
+  inputs.files fileTree('langs')
+  doLast {
+    fileTree('langs').collect {
+      "${it}".replace(dir, '')
+    }.each {
+      println it
+    }
+  }
+}
+----
+
+'''
+
+この他に、特定のディレクトリー以下のファイルを入力ファイルとする場合に用いる `inputs.dir` というメソッドもあります。
+
+=== 演習2
+
+. ファイル書き出しの演習2でやったプログラミング言語を5つ改行区切りで `5-langs.txt` というファイルに出力する `fiveLangs` タスクを作ってください。
+** タスクの出力ファイルとして `5-langs.txt` を設定すること
+. ファイル書き出しの演習3でやったように1.で作成した `5-langs.txt` をマークダウン形式に変換して `5-langs.md` というファイルに出力する `fiveLangsToMd` というタスクを作ってください。
+** タスクの入力ファイルとして `5-langs.txt` を設定すること
+** タスクの出力ファイルとして `5-langs.md` を設定すること
