@@ -74,6 +74,11 @@ Groovyの `java.io.File` にはJDK標準のメソッドの他に便利なメソ�
 |`String`
 |`String encoding`
 |指定したエンコーディングでファイルの内容を読み込む
+
+|'<<'
+|'void'
+|'String'
+|ファイル末尾に文字列を追加する
 |===
 
 さらに、Groovyではgetter/setterの呼び出しがフィールドアクセスのように簡略化できますので、 `file.text` のような簡単な書き方でファイルの内容を読み込むことができます。
@@ -192,6 +197,39 @@ Groovyでは `List` や `Set` などのコレクション操作を簡単にす�
 * Python
 * Ruby
 ----
+
+.Groovyの `String` 便利メソッド
+[TIP]
+====
+
+Groovyの `java.lang.String` が便利になっていることは前にも説明しましたが、コレクション操作のようなことを可能にするメソッドがついています。
+
+[source,text]
+----
+Java
+Groovy
+Scala
+----
+
+上記の内容を保持した `String` のインスタンス `text` があるとします。これの各行の先頭に `* ` を付与して表示する操作は次のとおりです。
+
+.`eachLine` メソッド
+[source,groovy]
+----
+text.eachLine {
+  println "* ${it}"
+}
+----
+
+.実行結果
+[source,text]
+----
+* Java
+* Groovy
+* Scala
+----
+
+====
 
 == 演習4(結構ハイレベル)
 
