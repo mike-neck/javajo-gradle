@@ -89,3 +89,17 @@ task langTypesBySourceDir {
         }
     }
 }
+
+task langsWithUpToDate {
+    def outputFile = file('languages.txt')
+    def contents = [
+            'Clojure', 'Groovy', 'Scala', 'Java', 'JRuby'
+    ].join('\n')
+    outputs.file outputFile
+    outputs.upToDateWhen {
+        outputFile.exists() && outputFile.text == contents
+    }
+    doLast {
+        outputFile.write(contents, 'UTF-8')
+    }
+}

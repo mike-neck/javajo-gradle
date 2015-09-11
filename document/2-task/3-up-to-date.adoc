@@ -116,3 +116,110 @@ task langTypes {
 . ファイル書き出しの演習3でやったように1.で作成した `5-langs.txt` をマークダウン形式に変換して `5-langs.md` というファイルに出力する `fiveLangsToMd` というタスクを作ってください。
 ** タスクの入力ファイルとして `5-langs.txt` を設定すること
 ** タスクの出力ファイルとして `5-langs.md` を設定すること
+
+== UP-TO-DATEの設定
+
+ファイル書き出しの演習2で作成した `langs` というタスクは常に同じ内容を書き出します。
+同じ内容のタスクが何度も実行されるのは無駄とも言えます。
+ファイル書き出しの演習2 `langs` タスク程度の内容なら大した時間ではありませんが、これが非常に時間のかかるタスクである場合、無駄なビルド時間がかかってしまいます。
+
+そこで出力ファイルがすでに出来上がっていて、かつ出力内容が同じである場合に、タスクを処理せずに終了させることができます。
+
+それが `UP-TO-DATE` です。
+
+例えば、最初のJavaプロジェクトで実装を直した後に `test` を行ったときに、 `testClasses` タスクが `UP-TO-DATE` となっていました。
+これはテストのJavaファイルが変更されておらず、テストクラスもすでに生成されているために、 `testClasses`(テストのクラスファイルを生成するタスク)は実行不要(`UP-TO-DATE`)とGradleが判断し、
+処理が行われなかったわけです。
+
+.タスクを `UP-TO-DATE` にする方法
+. `outputs.file` を指定する
+. `outputs.upToDateWhen{}` で `UP-TO-DATE` になる条件を指定する
+
+=== 演習3
+
+* 演習1、演習2で作成したタスクを連続して実行した時に、2回目以降は `UP-TO-DATE` になることを確認して下さい。
+
+'''
+
+演習3をやるついでに、出力する内容を変更してみましょう。
+
+.変更前の `langs` タスク
+[source,groovy]
+----
+task langs {
+  def outputFile = file('languages.txt')
+  outputs.file outputFile
+  doLast {
+    def contents = [
+        'Java', 'Groovy', 'Scala',
+        'Clojure', 'JRuby'
+    ].join('\n')
+    outputFile.write(contents, 'UTF-8')
+  }
+}
+----
+
+.変更後の `langs` タスク
+[source,groovy]
+----
+task langs {
+  def outputFile = file('languages.txt')
+  outputs.file outputFile
+  doLast {
+    def contents = [
+        /* 順番を入れ替え */
+        'Clojure', 'JRuby',
+        'Java', 'Groovy', 'Scala'
+    ].join('\n')
+    outputFile.write(contents, 'UTF-8')
+  }
+}
+----
+
+ファイルの内容が変わっているので、 `UP-TO-DATE` になってほしくはないのですが、思いに反して `UP-TO-DATE` になってしまいますね。
+
+このような場合に上記の2.の方法「 `outputs.upToDateWhen{}` で `UP-TO-DATE` になる条件を指定する」を用います。
+
+.`outputs.upToDateWhen{}` で `UP-TO-DATE` の条件を指定する
+[source,groovy]
+----
+task langsWithUpToDate {
+  def outputFile = file('languages.txt')
+  def contents = [
+      'Clojure', 'Groovy', 'Scala', 'Java', 'JRuby'
+  ].join('\n')
+  outputs.file outputFile
+  outputs.upToDateWhen {
+    outputFile.exists() && outputFile.text == contents
+  }
+  doLast {
+    outputFile.write(contents, 'UTF-8')
+  }
+}
+----
+
+=== 演習4
+
+. 上記の `langsWithUpToDate` タスクを実行してください。
+** 2回連続で実行した場合は `UP-TO-DATE` になることを確認して下さい。
+. `langsWithUpToDate` タスクの中身(`contents`)の順番を変えてタスクを実行してください。
+** `UP-TO-DATE` にならないことを確認して下さい。
+
+=== 演習5
+
+* 下記のいずれかの文字をランダムで `jvm-language.txt` に書き出すタスク `randomJvmLang` を作ってください。
+** `Java`
+** `Groovy`
+** `Scala`
+*** 諸注意
+**** ランダムで書き出すため、場合によっては同じものが選ばれるかもしれません。その場合にはタスクが `UP-TO-DATE` になるようにしてください。
+**** 必ず `outputs.file` は指定してください。
+
+= まとめ
+
+タスクの出力(`outputs`)を設定しておくことのメリット
+
+* `cleanTaskName` でタスクの成果物を削除することができる
+* `UP-TO-DATE` を制御することでビルド時間を短縮できる
+
+なお、Gradleではデフォルトでは `inputs` の中身をチェックしており、これも `UP-TO-DATE` に関連してくるようです。(ここについては僕が不勉強なので説明不足になりました)
