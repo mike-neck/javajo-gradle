@@ -64,14 +64,14 @@ public class FunctionsTest {
         }
 
         @Test
-        public void stringToIntegerFunction() {
+        public void string型の値をInteger型に変換するテスト() {
             Function<String, Integer> length = String::length;
             Integer len = object.applyToIntegerFunction(length);
             assertThat(len, is(8));
         }
 
         @Test(expected = ExecutingException.class)
-        public void stringToUrlFunction() {
+        public void strig型の値をURL型に変換するときに例外が発生する場合のテスト() {
             ExFunction<String, URL> toUrl = URL::new;
             object.applyToUrlFunction(function(toUrl));
         }
@@ -103,21 +103,21 @@ public class FunctionsTest {
         }
 
         @Test
-        public void normalGenerator() {
+        public void generator型の引数を取るメソッドにgeneratorを渡すテスト() {
             Generator<GeneratorSupport> gen = GeneratorSupport::new;
             Integer hash = getHash(gen);
             assertThat(hash, is(notNullValue()));
         }
 
         @Test
-        public void exceptionalGenerator() {
+        public void 例外許容型generatorをgenerator型の引数をとるメソッドに渡すテスト() {
             ExGenerator<GeneratorSupport> gen = () -> new GeneratorSupport(false);
             Integer hash = getHash(generator(gen));
             assertThat(hash, is(notNullValue()));
         }
 
         @Test(expected = ExecutingException.class)
-        public void exceptionOccurrence() {
+        public void 例外許容型generatorで例外が発生するものをgenerator型の引数をとるメソッドに渡すテスト() {
             ExGenerator<GeneratorSupport> gen = () -> new GeneratorSupport(true);
             getHash(generator(gen));
         }
@@ -136,21 +136,21 @@ public class FunctionsTest {
         }
 
         @Test
-        public void nonExceptionalAction() {
+        public void 処理型の引数をとるメソッドに処理型のインスタンスを渡すテスト() {
             Operator<String> op = holder::forcePut;
             object.act(op);
             assertThat(holder.getValue(), is("testData"));
         }
 
         @Test
-        public void exceptionalButNotThrown() {
+        public void 例外許容処理型のインスタンスを処理型の引数をとるメソッドに渡すテスト() {
             ExOperator<String> op = holder::putValue;
             object.act(operator(op));
             assertThat(holder.getValue(), is("testData"));
         }
 
         @Test(expected = ExecutingException.class)
-        public void exceptionalAndThrown() {
+        public void 例外許容処理型で例外を実際に送出する処理型のインスタンスを処理型の引数をとるメソッドに渡すテスト() {
             holder.forcePut("before");
             ExOperator<String> op = holder::putValue;
             object.act(operator(op));
@@ -160,17 +160,17 @@ public class FunctionsTest {
     public static class ConverterTest {
 
         @Test(expected = EvaluatingException.class)
-        public void functionConverter() {
+        public void 例外許容関数型の変換メソッドにnullを渡した場合にEvaluationExceptionが発生するテスト() {
             function(null);
         }
 
         @Test(expected = EvaluatingException.class)
-        public void generatorConverter() {
+        public void 例外許容生成型の変換メソッドにnullを渡した場合にEvaluationExceptionが発生するテスト() {
             generator(null);
         }
 
         @Test(expected = EvaluatingException.class)
-        public void operationConverter() {
+        public void 例外許容処理型の変換メソッドにnullを渡した場合にEvaluationExceptionが発生するテスト() {
             operator(null);
         }
     }

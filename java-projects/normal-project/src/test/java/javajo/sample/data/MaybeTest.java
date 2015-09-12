@@ -47,35 +47,35 @@ public class MaybeTest {
         }
 
         @Test
-        public void isNothingReturnsTrue() {
+        public void nothing型のisNothingを呼び出すとtrue() {
             assertThat(maybe.isNothing(), is(true));
         }
 
         @Test
-        public void isSomeReturnsFalse() {
+        public void nothing型のisSomeを呼び出すとfalse() {
             assertThat(maybe.isSome(), is(false));
         }
 
         @Test(expected = NoSuchElementException.class)
-        public void getMethodThrowsException() {
+        public void nothingにgetを呼び出すとNoSucheElementException() {
             maybe.get();
             fail("This code should not be executed.");
         }
 
         @Test
-        public void orDefaultMethodReturnsDefaultValue() {
+        public void nothingにorDefaultを呼び出すとデフォルト値が帰ってくる() {
             String value = maybe.orDefault("default");
             assertThat(value, is("default"));
         }
 
         @Test(expected = TestException.class)
-        public void orThrowThrowsException() {
+        public void nothingにorThrowを呼び出すと例外が送出される() {
             maybe.orThrow(TestException::new);
             fail("This code should not be executed.");
         }
 
         @Test
-        public void sideEffectComesFromOrOnNothingDo() {
+        public void nothingに対して副作用実行処理ではorOnNothingDoに渡した処理が実行される() {
             ValueHolder<String> holder = new ValueHolder<>();
             maybe.onSomeDo(Assert::fail)
                     .orOnNothingDo(() -> holder.forcePut("it's nothing."));
@@ -83,20 +83,20 @@ public class MaybeTest {
         }
 
         @Test
-        public void whenSomeMethodDoNothing() {
+        public void nothingに対してwhenSomeを呼び出しても何もなされない() {
             ValueHolder<String> holder = new ValueHolder<>();
             maybe.whenSome(holder::forcePut);
             assertThat(holder.hasValue(), is(false));
         }
 
         @Test
-        public void mappingNothingReturnsNothing() {
+        public void nothingに対してmapを呼び出してもNothingのまま() {
             Maybe<Integer> mapped = maybe.map(String::length);
             assertThat(mapped.isNothing(), is(true));
         }
 
         @Test
-        public void flatMappingNothingReturnsNothing() {
+        public void nothingに対してfmapを呼び出してもNothingのまま() {
             Maybe<String> fmapped = maybe.fmap(s -> s == null ? nothing() : some(s));
             assertThat(fmapped.isNothing(), is(true));
         }
@@ -112,35 +112,35 @@ public class MaybeTest {
         }
 
         @Test
-        public void isNothingReturnsFalse() {
+        public void someに対してisNothingを呼び出すとfalse() {
             assertThat(maybe.isNothing(), is(false));
         }
 
         @Test
-        public void isSomeReturnsTrue() {
+        public void someに対してisSomeを呼び出すとtrue() {
             assertThat(maybe.isSome(), is(true));
         }
 
         @Test
-        public void getMethodReturnsValue() {
+        public void someに対してgetを呼び出すと保持している値が返される() {
             String value = maybe.get();
             assertThat(value, is("testData"));
         }
 
         @Test
-        public void orDefaultReturnsOriginalValue() {
+        public void someに対してorDefaultを呼び出すと保持している値のほうが返される() {
             String value = maybe.orDefault("This value should not be returned.");
             assertThat(value, is("testData"));
         }
 
         @Test
-        public void orThrowReturnsOriginalValue() {
+        public void someに対してorThrowを呼び出すと例外は投げられず保持されている値が返される() {
             String value = maybe.orThrow(TestException::new);
             assertThat(value, is("testData"));
         }
 
         @Test
-        public void sideEffectComesFromOnSomeDo() {
+        public void someはonSomeDoに与えた処理が実行される() {
             ValueHolder<String> holder = new ValueHolder<>();
             maybe.onSomeDo(holder::forcePut)
                     .orOnNothingDo(() -> fail("This code should not be executed."));
@@ -148,7 +148,7 @@ public class MaybeTest {
         }
 
         @Test
-        public void whenSomeMethodHasSideEffect() {
+        public void someにwhenSomeを呼び出すと副作用を発生させることができる() {
             ValueHolder<String> holder = new ValueHolder<>();
             maybe.whenSome(holder::forcePut);
             assertThat(holder.getValue(), is("testData"));
@@ -165,7 +165,7 @@ public class MaybeTest {
         }
 
         @Test
-        public void mapping() {
+        public void someでmapを呼び出した場合指定通りの変換がなされる() {
             Maybe<Integer> mapped = maybe.map(String::length);
             assertThat(mapped.isSome(), is(true));
             Integer length = mapped.orDefault(-1);
@@ -173,7 +173,7 @@ public class MaybeTest {
         }
 
         @Test
-        public void flatMappingReturningSome() {
+        public void someのfmapにSomeが返された場合Someとなる() {
             Function<String, Maybe<String>> last5Chars = s -> s.length() < 5 ?
                     nothing() :
                     some(s.substring(s.length() - 5, s.length()));
@@ -183,7 +183,7 @@ public class MaybeTest {
         }
 
         @Test
-        public void flatMappingReturningNothing() {
+        public void someのfmapでNothingが返されるとNothingになる() {
             Function<String, Maybe<String>> takeLast10Chars = s -> s.length() < 10 ?
                     nothing() :
                     some(s.substring(s.length() - 5, s.length()));
@@ -192,14 +192,14 @@ public class MaybeTest {
         }
 
         @Test
-        public void mappedByNullReturningFunctionMakesNothing() {
+        public void someのmapにnullを返す関数を渡すとNothingになる() {
             Function<String, URL> returnsNull = s -> null;
             Maybe<URL> mapped = maybe.map(returnsNull);
             assertThat(mapped.isNothing(), is(true));
         }
 
         @Test
-        public void flatMappingByNullReturningFunctionMakesNothing() {
+        public void someのfmapにnullを返す関数を渡すとNothingになる() {
             Function<String, Maybe<URL>> returnsNull = s -> null;
             Maybe<URL> fmapped = maybe.fmap(returnsNull);
             assertThat(fmapped.isNothing(), is(true));

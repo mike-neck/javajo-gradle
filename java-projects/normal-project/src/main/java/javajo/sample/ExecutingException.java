@@ -15,6 +15,16 @@
  */
 package javajo.sample;
 
+/**
+ * 関数実行時に発生した例外をくるむための例外<br/>
+ * 主に次の用途で利用する
+ * <ul>
+ *     <li>{@link javajo.sample.functions.Functions.Function}でラップした{@link javajo.sample.functions.Functions.ExFunction}の実行時に発生した例外をラップする</li>
+ *     <li>{@link javajo.sample.functions.Functions.Generator}でラップした{@link javajo.sample.functions.Functions.ExGenerator}の実行時に発生した例外をラップする</li>
+ *     <li>{@link javajo.sample.functions.Functions.Condition}でラップした{@link javajo.sample.functions.Functions.ExCondition}の実行時に発生した例外をラップする</li>
+ *     <li>{@link javajo.sample.functions.Functions.Task}でラップした{@link javajo.sample.functions.Functions.ExTask}の実行時に発生した例外をラップする</li>
+ * </ul>
+ */
 public class ExecutingException extends RuntimeException {
 
     public ExecutingException(String message) {

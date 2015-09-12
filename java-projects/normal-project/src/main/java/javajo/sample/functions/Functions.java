@@ -24,40 +24,51 @@ public final class Functions {
 
     private Functions() {}
 
+    /**
+     * 関数型の基底型
+     */
     public interface FunctionType{}
 
     /**
-     * function with type * -&gt; *
-     * @param <IN> input type
-     * @param <OUT> output type
+     * 関数型<br/>
+     * IN型の入力からOUT型の値への変換を行う関数
+     * @param <IN> 入力の型
+     * @param <OUT> 出力の型
      */
     @FunctionalInterface
     public interface Function<IN, OUT> extends FunctionType {
         /**
-         * receive input instance and returns output object.
-         * @param input - input object.
-         * @return - output object.
+         * IN型のパラメーターを一つ取り、OUT型の値に変換して返すメソッド
+         * @param input - IN型のパラメーター
+         * @return - OUT型の値
          */
         OUT apply(IN input);
     }
 
     /**
-     * function with type * -&gt; *. this interface allows throwing exception.
-     * @param <IN> input type
-     * @param <OUT> output type
+     * 例外許容関数型<br/>
+     * IN型の入力からOUT型の値への変換を行う関数で例外が発生するタイプの関数
+     * @param <IN> 入力の型
+     * @param <OUT> 出力の型
      */
     @FunctionalInterface
     public interface ExFunction<IN, OUT> extends FunctionType {
+        /**
+         * IN型のパラメーターを一つ取り、OUT型の値に変換して返すメソッド
+         * @param input - IN型のパラメーター
+         * @return - OUT型の値
+         * @throws Exception IN型からOUT型に変換するメソッドで宣言されている検査例外
+         */
         OUT apply(IN input) throws Exception;
     }
 
     /**
-     * convert {@link Functions.ExFunction} to {@link Functions.Function}.
-     * @param exf - {@link Functions.ExFunction} instance. Null value not allowed.
-     * @param <I> - function input type
-     * @param <O> - function output type
-     * @return - {@link Functions.Function} instance. It's not null.
-     * @throws EvaluatingException if function is null, exception will be thrown.
+     * {@link Functions.ExFunction}を{@link Functions.Function}に変換する関数
+     * @param exf - {@link Functions.ExFunction} 例外許容関数。{@code null}は許されない。
+     * @param <I> - 関数の入力型
+     * @param <O> - 関数の出力型
+     * @return - {@link Functions.Function} ラップされた関数。
+     * @throws EvaluatingException 渡された関数が{@code null}だった場合に送出される。
      */
     @NotNull
     @Contract("null -> fail")
@@ -73,10 +84,10 @@ public final class Functions {
     }
 
     /**
-     * check function is not null. if null is passed, {@link EvaluatingException} will be thrown.
-     * @param fun - function
-     * @param <FUN> - function type
-     * @throws EvaluatingException - if function is null, exception will be thrown.
+     * 関数が{@code null}でないことをチェックする。{@code null}の場合、{@link EvaluatingException}が送出される。
+     * @param fun - 関数
+     * @param <FUN> - 関数型
+     * @throws EvaluatingException パラメーターが{@code null}の場合送出される。
      */
     @Contract("null -> fail")
     public static <FUN extends FunctionType> void verifyNotNullFunction(FUN fun) throws EvaluatingException {
@@ -85,40 +96,45 @@ public final class Functions {
         }
     }
 
+    /**
+     * 生成型の基底型
+     */
     public interface GeneratorType {}
 
     /**
-     * function with type -&gt; *
-     * @param <O> output type
+     * 生成型<br/>
+     * O型の値を生成する。
+     * @param <O> 生成する値の型
      */
     @FunctionalInterface
     public interface Generator<O> extends GeneratorType {
         /**
-         * create instance.
-         * @return - instance.
+         * 値を生成する
+         * @return - 生成されたO型の値
          */
         O get();
     }
 
     /**
-     * function with type -&gt; *
-     * @param <O> output type
+     * 例外許容生成型<br/>
+     * 生成時に検査例外が発生する生成型
+     * @param <O> 生成される値の型
      */
     public interface ExGenerator<O> extends GeneratorType {
         /**
-         * create instance.
-         * @return - instance.
+         * 値を生成する
+         * @return - 生成されたO型の値
          * @throws Exception
          */
         O get() throws Exception;
     }
 
     /**
-     * convert {@link Functions.ExGenerator} to {@link Functions.Generator}.
-     * @param exg generator instance.
-     * @param <O> generator type
-     * @return converted generator
-     * @throws EvaluatingException - if generator is null, an exception will be thrown.
+     * {@link Functions.ExGenerator}から{@link Functions.Generator}に変換する関数
+     * @param exg 例外許容生成型
+     * @param <O> 生成型
+     * @return ラップされた生成型
+     * @throws EvaluatingException - パラメーターに{@code null}が渡された場合に送出する。
      */
     @NotNull
     @Contract("null -> fail")
@@ -134,10 +150,10 @@ public final class Functions {
     }
 
     /**
-     * check generator is not null. if generator is null, an exception will be thrown.
-     * @param gen - generator instance.
-     * @param <OBJ> - generator type.
-     * @throws EvaluatingException if generator is null, an exception will be thrown.
+     * パラメーターの生成型が{@code null}かどうか検査する。
+     * @param gen - 生成型の値
+     * @param <OBJ> - 生成型
+     * @throws EvaluatingException {@code null}が渡された場合に送出される。
      */
     @Contract("null -> fail")
     public static <OBJ extends GeneratorType> void verifyNonNullGenerator(OBJ gen) throws EvaluatingException {
@@ -146,41 +162,46 @@ public final class Functions {
         }
     }
 
+    /**
+     * 処理型の基底型
+     */
     public interface OperatorType {}
 
     /**
-     * function with type * -&gt; ()
-     * @param <IN> input type
+     * 処理型<br/>
+     * IN型の入力値を受け取り、副作用を発生させる。
+     * @param <IN> 入力の型
      */
     @FunctionalInterface
     public interface Operator<IN> extends OperatorType {
         /**
-         * accept input value.
-         * @param input input value.
+         * IN型の入力値を受け取り副作用を発生させる
+         * @param input 入力値。
          */
         void accept(IN input);
     }
 
     /**
-     * function with type * -&gt; ()
-     * @param <IN> input type
+     * 例外許容処理型<br/>
+     * IN型の入力値を受け取り、副作用を発生させる。
+     * @param <IN> 入力の型
      */
     @FunctionalInterface
     public interface ExOperator<IN> extends OperatorType {
         /**
-         * accept input value.
-         * @param input input value.
-         * @throws Exception
+         * IN型の入力値を受け取り副作用を発生させる。
+         * @param input 入力値
+         * @throws Exception 副作用発生させるメソッドで宣言されている検査例外
          */
         void accept(IN input) throws Exception;
     }
 
     /**
-     * convert {@link Functions.ExOperator} to {@link Functions.Operator}.
-     * @param exo {@link Functions.ExOperator} instance.
-     * @param <I> input type
-     * @return {@link Functions.Operator} instance.
-     * @throws EvaluatingException - if given operation is null value, an exception will be thrown.
+     * {@link Functions.ExOperator}を{@link Functions.Operator}に変換する関数
+     * @param exo 例外許容処理型の値
+     * @param <I> 入力値の型
+     * @return ラップされた処理型
+     * @throws EvaluatingException - 例外許容処理型が{@code null}の場合に送出される。
      */
     @NotNull
     @Contract("null -> fail")
@@ -196,10 +217,10 @@ public final class Functions {
     }
 
     /**
-     * check operation is not null value.
-     * @param ope - operation instance
-     * @param <OPE> operation type
-     * @throws EvaluatingException
+     * 処理型が{@code null}であるか検査する
+     * @param ope - 処理型の値
+     * @param <OPE> 処理型
+     * @throws EvaluatingException パラメーターの処理型が{@code null}の場合に送出される。
      */
     @Contract("null -> fail")
     public static  <OPE extends OperatorType> void verifyNotNullOperator(OPE ope) throws EvaluatingException {
@@ -208,41 +229,46 @@ public final class Functions {
         }
     }
 
+    /**
+     * 条件型
+     */
     public interface ConditionType {}
 
     /**
-     * function with type * -&gt; *(boolean)
-     * @param <SBJ> - subject type
+     * 条件型<br/>
+     * SBJ型の入力を受け取り条件を満たすかテストする
+     * @param <SBJ> - 入力値の型
      */
     public interface Condition<SBJ> extends ConditionType {
         /**
-         * test subject satisfies condition.
-         * @param sbj - a subject to be tested.
-         * @return - {@code true} if the subject satisfies the condition. {@code false} if the subject doesn't satisfy the condition.
+         * 入力された値が条件を満たすかテストする
+         * @param sbj - SBJ型の入力値
+         * @return - 条件をみたす場合は{@code true}を返す。条件を満たさない場合は{@code false}を返す。
          */
         boolean test(SBJ sbj);
     }
 
     /**
-     * function with type * -&gt; *(boolean)
-     * @param <SBJ> - subject type
+     * 例外許容条件型<br/>
+     * SBJ型の入力を受け取り条件をみたすかテストする
+     * @param <SBJ> - 入力値の型
      */
     public interface ExCondition<SBJ> extends ConditionType {
         /**
-         * test subject satisfies the condition.
-         * @param sbj - a subject to be tested.
-         * @return - {@code true} if the subject satisfies the condition. {@code false} if the subject doesn't satisfy the condition.
-         * @throws Exception
+         * 入力された値が条件を満たすかテストする
+         * @param sbj - SBJ型の入力値
+         * @return - 条件をみたす場合は{@code true}を返す。条件を満たさない場合は{@code false}を返す。
+         * @throws Exception テストの過程で利用されるメソッドが宣言している検査例外
          */
         boolean test(SBJ sbj) throws Exception;
     }
 
     /**
-     * convert {@link javajo.sample.functions.Functions.ExCondition} to {@link javajo.sample.functions.Functions.Condition}.
-     * @param exc - {@link javajo.sample.functions.Functions.ExCondition} instance.
-     * @param <S> - subject type
-     * @return - {@link javajo.sample.functions.Functions.Condition} instance.
-     * @throws EvaluatingException
+     * {@link javajo.sample.functions.Functions.ExCondition}を{@link javajo.sample.functions.Functions.Condition}に変換する
+     * @param exc - 例外許容条件型
+     * @param <S> - テスト対象の型
+     * @return - ラップされた{@link javajo.sample.functions.Functions.Condition}
+     * @throws EvaluatingException - 入力された条件型が{@code null}の場合に送出される。
      */
     @NotNull
     @Contract("null -> fail")
@@ -258,10 +284,10 @@ public final class Functions {
     }
 
     /**
-     * check condition is not null value.
-     * @param cnd condition instance.
-     * @param <CND> condition type
-     * @throws EvaluatingException if condition is null value, an exception will be thrown.
+     * 入力された条件型が{@code null}であるか検査する。
+     * @param cnd 条件型の値
+     * @param <CND> 条件型
+     * @throws EvaluatingException 入力された条件型の値が{@code null}の場合に送出される。
      */
     @Contract("null -> fail")
     public static <CND extends ConditionType> void verifyNotNullCondition(CND cnd) throws EvaluatingException {

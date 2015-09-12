@@ -15,6 +15,10 @@
  */
 package javajo.sample;
 
+/**
+ * {@code null}を許容できないパラメーターに{@code null}を渡した時に発生させる例外。<br/>
+ * なお、おもに関数を引数に取る関数・メソッドなどの{@code null}チェックで発生させる。
+ */
 public class EvaluatingException extends RuntimeException {
     public EvaluatingException(String message) {
         super(message);
