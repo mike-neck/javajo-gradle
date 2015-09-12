@@ -1,0 +1,263 @@
+= タスクの依存関係、連携
+
+タスクの実行順序について学びます。
+
+== タスクの依存関係
+
+=== タスクの依存関係を設定することの重要性
+
+§3の演習2で作成した `fiveLangs` と `fiveLangsToMd` を振り返ります。
+
+`fiveLangsToMd` は `fiveLangs` で作成したファイルを入力ファイルとして、タスクの処理が行われていました。
+
+==== 演習1
+
+`task-projects/up-to-date` ディレクトリーにて
+`cleanFiveLangsToMd` `cleanFiveLangs` タスクを実行してから、
+`fiveLangsToMd` を実行してください。
+
+次のようなログが出るはずです
+
+.BUILD FAILED
+[source,text]
+----
+* What went wrong:
+Execution failed for task ':task-projects:up-to-date:fiveLangsToMd'.
+> /Users/mike/IdeaProjects/sandbox/javajo-gradle/task-projects/up-to-date/5-langs.txt (No such file or directory)
+
+BUILD FAILED
+----
+
+この結果はよく考えると当たり前の結果です。というのも、 `fiveLangsToMd` タスクは `fiveLangs` の出力ファイルに依存しているからです。
+
+Gradleは小さなタスクを組み合わせて複雑なビルドを構築します。そのためタスクの実行の前提条件として、あるタスクが他のタスクが終了していることが求められたりします。
+
+このようなタスクの依存関係を指定する仕組みをGradleは提供しています。
+
+== タスクの依存関係の設定
+
+タスクの依存関係の設定はいろいろと方法がありますが、4つほど紹介します。
+
+. `Task` の `inputs` 、 `outputs` を使った設定
+. `dependsOn` による設定
+. `mustRunAfter` による設定(incubating)
+. `finalizedBy` による設定(incubating)
+
+=== `inputs`/`outputs` による設定
+
+§3の　`up-to-date` では主にファイルインスタンスを `inputs.file` に渡すことによって、入力などの設定を行っていましたが、 `outputs.files` が設定されているタスクインスタンスを、 `inputs.file` の引数として渡すことが可能です。
+
+.`fiveLangs` と `fiveLangsToMd` の改良版
+[source,groovy]
+----
+task fiveLangs {
+  def outFile = '5-langs.txt'
+  def contents = [
+      'Java', 'Groovy', 'Scala', 'Kotlin', 'JRuby'
+  ].join('\n')
+  /* 出力ファイルを設定する */
+  outputs.file outFile
+  outputs.upToDateWhen {
+    file(outFile).exists() &&
+        file(outFile).text == contents
+  }
+  doLast {
+    file(outFile).write(contents, 'UTF-8')
+  }
+}
+
+task fiveLangsToMd {
+  def outFile = '5-langs.md'
+  /* 入力をファイル名ではなくタスクにする */
+  inputs.file tasks.fiveLangs
+  outputs.file outFile
+  doLast {
+    inputs.files.singleFile.text.eachLine {
+      def f = file(outFile)
+      f << "* ${it}"
+      f << '\n'
+    }
+  }
+}
+----
+
+==== 演習2
+
+`task-projects/task-co-work` ディレクトリーに移動してください。
+ここの `build.gradle` に上記の改良した `fiveLangs` タスクと `fiveLangsToMd` タスクが作成されています。
+
+. 実際に `fiveLangsToMd` タスクを実行してください。
+** `fiveLangs` タスクも実行されることを確認して下さい。
+. 1.の後に再び `fiveLangsToMd` タスクを実行してください。
+** `fiveLangs` 、 `fiveLangsToMd` ともに `UP-TO-DATE` になることを確認して下さい。
+. `fiveLangs` で出力される中身を書き換えてから、 `fiveLangsToMd` を実行してください。
+** `fiveLangs` 、 `fiveLangsToMd` ともに `UP-TO-DATE` ではないことを確認して下さい。
+
+=== `dependsOn` による設定
+
+`inputs.file` による設定は出力ファイルが設定されていることが条件でしたが、タスクによっては出力ファイルがない場合もあります(たとえば `build` ディレクトリを削除する `clean` タスクなど)。
+このような出力ファイルが設定されていないタスクを先に実行するように設定する場合に用いるのが `dependsOn` です。
+
+.`dependsOn` によるタスクの依存関係の設定
+[source,groovy]
+----
+task first {
+  doLast {
+    println 'first'
+  }
+}
+/* 2nd は 1st に依存 */
+task second {
+  dependsOn 'first'
+  doLast {
+    println 'second'
+  }
+}
+/* 3rd は 1st に依存 */
+task third(dependsOn: 'first') {
+  doLast {
+    println 'third'
+  }
+}
+/* short は 2nd と 3rd に依存 */
+/* short は プリミティブ型のshortと混同してしまうので、シングルクォートで囲ってある */
+task 'short'(dependsOn: ['second', 'third']) {
+  doLast {
+    println 'short'
+  }
+}
+task catcher {
+  doLast {
+    println 'catcher'
+  }
+}
+/* catcher は short に依存 */
+catcher.dependsOn 'short'
+task pitcher {
+  doLast {
+    println 'pitcher'
+  }
+}
+pitcher.dependsOn catcher
+----
+
+==== 演習3
+
+* 上記のタスクが `build.gradle` に定義してあるので、 `first` 〜 `pitcher` 順番に実行して、タスクがどのような順序で実行されているか確認して下さい。
+
+==== 演習4
+
+.次の依存関係を満たすタスクを作ってください。
+* `baseDesign` タスクは最初に行われる
+* `detailDesign` タスクは `baseDesign` タスクに依存する
+* `databaseDesign` タスクは `baseDesign` タスクに依存する
+* `environmentDesign` タスクは `baseDesign` タスクに依存する
+* `coding` タスクは `detailDesign` 、 `databaseDesign` に依存する
+* `integTest` タスクは `detailDesign` 、 `coding` に依存する
+* `totalTest` タスクは `integTest` 、 `environmentDesign` 、 `baseDesign` タスクに依存する
+* `delivery` タスクは `totalTest` に依存する
+
+==== 演習5(すごい難しい)
+
+.次の依存関係を満たすタスクを作ってください。
+* `randomNumber` タスク
+** 1から10までの数値をランダムに1つ選び表示するタスク
+* `even` タスク
+** `randomNumber` タスクに依存するタスク
+** `randomNumber` タスクが偶数を選んだ場合に実行される
+** `2 is even.` という形式の文字列を、 `randomNumber` の選択した数値とともに表示する
+* `great` タスク
+** `randomNumber` タスクに依存するタスク
+** `randomNumber` タスクが6以上の数値を選んだ場合に実行される
+** `6 is great.` という形式の文字列を、 `randomNumber` の選択した数値とともに表示する。
+* `random` タスク
+** `even` タスクに依存する
+** `great` タスクに依存する
+
+.カスタムタスクの作り方
+[TIP]
+====
+
+. `DefaultTask` クラスを継承したクラスを作ります
+. `@TaskAction` アノテーションを付与した `void` 型のメソッドを作成し、その中にタスクの処理を記述します。
+. タスクを作る際に、 `type` に作成したクラスを指定します。
+
+.`randomNumber` タスク用のカスタムタスク
+[source,groovy]
+----
+class RandomNumberTask extends DefaultTask {
+  int number
+  @TaskAction
+  void showNumber() {
+    def range = 1..10
+    def num = range[new Random().nextInt(range.size())]
+    println num
+    number = num
+  }
+}
+
+task randomNumber(type: RandomNumberTask)
+----
+
+====
+
+.Groovyの `IntRange` クラス
+[TIP]
+====
+
+Groovyには値の範囲を指定して `List` のように扱う `IntRange` なるクラスがあります。
+
+.`IntRange` のインスタンス化および使い方
+[source,groovy]
+----
+def range = 1..10
+assert range[0] == 1
+assert range[9] == 10
+assert range.size() == 10
+assert 4 in range
+----
+
+ちょっとした連続する数値を扱うには非常に便利なクラスです。
+
+====
+
+=== `mustRunAfter` による設定
+
+`mustRunAfter` による設定は、厳密にはタスクの依存関係は発生しません。
+ただし、タスクを `mustRunAfter` に設定した関係のあるタスク同士を同時起動した場合にのみ、順番関係が発生します。
+
+.`mustRunAfter` によるタスク実行順序の設定例
+[source,groovy]
+----
+task bef {
+  doLast {
+    printn 'before'
+  }
+}
+task aft {
+  mustRunAfter 'bef'
+  doLast {
+    println 'after'
+  }
+}
+----
+
+==== 演習6
+
+.上記のタスクを次の4パターンにわけて実行してどのタスクがどの順序で実行されているか確認して下さい。
+. `bef` タスクのみ起動
+** `gradle bef` で起動する
+. `aft` タスクのみ起動
+** `gradle aft` で起動する
+. `bef` `aft` を同時に起動
+** `gradle bef aft` で起動する
+. `aft` `bef` を同時に起動する
+** `gradle aft bef` で起動する
+
+== まとめ
+
+* タスクの依存・実行順序設定には4通りある
+** `input.file` を介した設定
+** `dependsOn` を介した設定
+** `mustRunAfter` による設定
+** `finalizedBy` による設定(説明省略)

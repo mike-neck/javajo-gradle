@@ -1,0 +1,98 @@
+apply plugin: 'base'
+
+if(file('answer.gradle').exists()) {
+    apply from: 'answer.gradle'
+}
+
+task fiveLangs {
+    def outFile = '5-langs.txt'
+    def contents = [
+            'Java', 'Groovy', 'Scala',
+            'Kotlin', 'Haskell'
+    ].join('\n')
+    outputs.file outFile
+    outputs.upToDateWhen {
+        file(outFile).exists() &&
+                contents == file(outFile).text
+    }
+    doLast {
+        file(outFile).write(contents, 'UTF-8')
+    }
+}
+
+task fiveLangsToMd {
+    def outFile = '5-langs.md'
+    inputs.file tasks.fiveLangs
+    outputs.file outFile
+    doLast {
+        inputs.files.singleFile.text.eachLine {
+            def f = file(outFile)
+            f << "* ${it}"
+            f << '\n'
+        }
+    }
+}
+
+// dependsOnによるタスクの依存関係の設定
+
+task first {
+    doLast {
+        println 'first'
+    }
+}
+
+/* 2nd は 1st に依存 */
+task second {
+    dependsOn 'first'
+    doLast {
+        println 'second'
+    }
+}
+
+/* 3rd は 1st に依存 */
+task third(dependsOn: 'first') {
+    doLast {
+        println 'third'
+    }
+}
+
+/* short は 2nd と 3rd に依存 */
+/* short は プリミティブ型のshortと混同してしまうので、シングルクォートで囲ってある */
+task 'short'(dependsOn: ['second', 'third']) {
+    doLast {
+        println 'short'
+    }
+}
+
+/* catcher は short に依存 */
+task catcher {
+    doLast {
+        println 'catcher'
+    }
+}
+catcher.dependsOn 'short'
+
+/* pitcher は catcher に依存 */
+task pitcher(group: 'baseball') {
+    doLast {
+        println 'pitcher'
+    }
+}
+pitcher.dependsOn catcher
+
+/*
+mustRunAfter による設定
+ */
+
+task bef {
+    doLast {
+        println 'before task'
+    }
+}
+
+task aft {
+    mustRunAfter 'bef'
+    doLast {
+        println 'after task'
+    }
+}
