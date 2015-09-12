@@ -4,7 +4,7 @@
 
 # gradle directories
 build/
-!gradle/wrapper/*.jar
+!gradle-wrapper.jar
 **/build/
 **/.gradle/
 
