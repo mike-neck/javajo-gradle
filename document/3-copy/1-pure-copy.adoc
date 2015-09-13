@@ -125,3 +125,46 @@ task copyByFile(type: Copy) {
 なお、 `clean` タスクは `project.buildDir` ディレクトリーを削除するタスクです。
 
 ====
+
+== ディレクトリーごとコピー
+
+コピーはファイル単位だけでなく、ディレクトリー単位でも可能です。
+その際は `from` にディレクトリーを指定します。
+
+.ディレクトリーごとコピー
+[source,groovy]
+----
+task copyDir(type: Copy) {
+  from '../images/server'
+  into "${buildDir}/copy-dir"
+}
+----
+
+また、特に違いはありませんが、 `project.fileTree` メソッドによって、 `ConfigurableFileTree` オブジェクトを構築して `from` に指定することも可能です。動作としては、 `from` にディレクトリーを指定したものと同様の動きに鳴ります。
+
+.`fileTree` を用いてディレクトリーごとコピー
+[source,groovy]
+----
+task copyTree(type: Copy) {
+  from fileTree('../images/server')
+  into "${buildDir}/copy-tree"
+}
+----
+
+.`ConfigurableFileTree` のメリットは何？
+[TIP]
+====
+
+`ConfigurableFileTree` は指定したベースディレクトリーからのツリー構造をたどって得られるファイルのリストのようなものです。
+
+`List` との違いは `List` は内容がすぐに評価されるのに対して、 `ConfigurableFileTree` では必要になった時点でリストとして評価することができる点です。
+
+例えばまだツリーの内部にファイルが存在していない場合は、リストではディレクトリーの下にあるファイルを列挙することはできませんが、 `ConfigurableFileTree` では必要になった時に始めてディレクトリーの内部を走査するので、設定時にはなかったファイルを取り扱うことができます。
+
+====
+
+=== 演習3
+
+`copy-projects/images` の下にあるファイルをディレクトリー構造を維持したまま `build/images` ディレクトリーにコピーする `copyImages` タスクを作成してください。
+
+

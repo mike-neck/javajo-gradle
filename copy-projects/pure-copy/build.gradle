@@ -9,3 +9,12 @@ task copyJavaImage(type: Copy) {
     into "${buildDir}/java-image"
 }
 
+task copyDir(type: Copy) {
+    from '../images/server'
+    into "${buildDir}/copy-dir"
+}
+
+task copyTree(type: Copy) {
+    from fileTree('../images/server')
+    into "${buildDir}/copy-tree"
+}
