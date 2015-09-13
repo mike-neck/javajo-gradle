@@ -1,5 +1,8 @@
 apply plugin: 'java'
-apply plugin: 'jacoco'
+
+if (hasProperty('javaExtra')) {
+    apply from: 'extra.gradle'
+}
 
 ext {
     javaVersion = 1.8
@@ -26,26 +29,5 @@ tasks.withType(JavaCompile) {
 }
 
 test {
-    jacoco {
-        append = false
-        destinationFile = file("${buildDir}/jacoco/jacocoTest.exec")
-        classDumpFile = file("${buildDir}/jacoco/classpathdumps")
-    }
     exclude '**/*Test$*'
-    ignoreFailures = true
-}
-
-task showJacocoReportUrl(dependsOn: 'jacocoTestReport') {
-    onlyIf {
-        tasks.jacocoTestReport.didWork
-    }
-    doLast {
-        logger.lifecycle "Jacoco reports are available at file://${tasks.jacocoTestReport.reports.html.entryPoint}"
-    }
-}
-
-task covorage(dependsOn: ['clean', 'test']) {
-    finalizedBy tasks.showJacocoReportUrl
-    group = 'verification'
-    description = 'Runs Jacoco covorage tool.'
 }
