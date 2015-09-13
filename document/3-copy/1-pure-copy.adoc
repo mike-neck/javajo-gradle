@@ -1,0 +1,127 @@
+= Gradleのタスクの種類
+
+Gradleのタスクには様々なタイプのタスクがあります。
+
+* `JavaCompile`, `GroovyCompile`, 'Javadoc' などのコンパイル系タスク
+* `Exec`, `JavaExec` などの実行系タスク
+* `Test`, `FindBugs`, `CheckStyle`, `CodeNarc`, `Pmd` などのチェック系タスク
+* `PublishToMavenRepository`, `PublishToIvyRepository`, `Upload` などのアップロード系タスク
+* `Zip`, `Tar`, `War`, `Ear` などのアーカイブ系タスク
+
+これら全てを取り扱うのは1日では厳しいので、本勉強会の最後の章としてアーカイブ系タスクを取り上げることにします。
+
+== アーカイブタスクの基礎としてのコピータスク
+
+アーカイブ系のタスクはどのような働きをするものか確認しましょう。
+
+* 前提条件
+** アーカイブ対象のファイル群もしくはファイルがはいったツリーがある
+** 書き出すファイル名が決まっている
+* 処理内容
+** 対象のファイルを選定する
+** ファイルを一箇所にコピーする
+** 集めたファイルをアーカイブする
+
+アーカイブ系のタスクはだいたいこのような動作をします。
+
+ポイントとしてアーカイブ系のタスクは必ず次の共通点があります。
+
+* 入力となるファイルがある
+* 出力先の設定がある
+* 入力となるファイルを一度 *コピー* する
+
+アーカイブ系のタスクにはコピーをするという共通の動作があります。
+
+したがって、アーカイブ系タスクの基礎は `Copy` タスクです。
+
+実際、 `Zip`, `Jar`, `Tar`, `War`, `Ear` タスククラスは `AbstractCopyTask` を継承したタスクになっています。
+
+= `Copy` タスクの作り方
+
+`copy-projects/pure-copy` ディレクトリーに移動してください。
+
+`Copy` タスクの作り方の参考例として、 `copy-projects/images` ディレクトリーにある `java.jpg` ファイルを `copy-projects/pure-copy/build/java-image` ディレクトリーにコピーするタスクを取り上げます。
+
+== 単一ファイルのコピー
+
+.`Copy` タスクの作り方
+[source,groovy]
+----
+task copyJavaImage(type: Copy) { /* <1> */
+  from file('../images/java.jpg') /* <2> */
+  into file("${buildDir}/java-image") /* <3> */
+}
+----
+<1> タスクの `type` に `Copy` を指定します。
+<2> `from` メソッドで入力ファイルを指定します。
+<3> `into` メソッドで出力先を指定します。
+
+=== 演習1
+
+.`copy-projects/pure-copy` ディレクトリーの `build.gradle` に上記のタスクが定義されていますので、実行してください。
+* `build/java-image` ディレクトリーに `java.jpg` ファイルがコピーされているか確認して下さい。
+
+== 複数ファイルのコピー
+
+.複数のファイルをコピーするタスクの作り方は下記の二通りあります。
+. `from` に複数のファイルを指定する
+. `from` を複数回使う
+
+
+.`from` に複数のファイルを指定する
+[source,groovy]
+----
+task copyMultiImages(type: Copy) {
+  from '../images/java.jpg', '../images/jvm/groovy.png', '../images/jvm/scala.png'
+  into "${buildDir}/jvm-langs"
+}
+----
+
+.`from` を複数回使う
+[source,groovy]
+----
+task copyMultiFromImages(type: Copy) {
+  ['java.jpg', 'jvm/groovy.png', 'jvm/scala.png'].each {
+    from "../images/${it}"
+  }
+  into "${buildDir}/multi-images"
+}
+----
+
+=== 演習2
+
+.`../images/` 以下にある複数のファイルをコピーするタスクを作ってください。
+* `from` に複数のファイルを指定するやり方
+* `from` を複数回使うやり方
+
+.`from`/`into` の引数は `String`? `File`?
+[TIP]
+====
+
+`project` オブジェクトの `file` メソッドで評価されるので、 `String` 、 `File` いずれで指定してもかまいません。
+
+.どちらの定義も同じ動作をする
+[source,groovy]
+----
+task copyByString(type: Copy) {
+  from '../images/java.jpg'
+  into "${buildDir}/java-image"
+}
+task copyByFile(type: Copy) {
+  from file('../images/java.jpg')
+  into file('build/java-image')
+}
+----
+
+====
+
+.`buildDir` とは？
+[TIP]
+====
+
+プロジェクトの成果物を配置するディレクトリーです。ほぼすべてのタスクの成果物はこのディレクトリーに配置されます。
+デフォルトのディレクトリーのパスは `projectDir/build` となっています。
+
+なお、 `clean` タスクは `project.buildDir` ディレクトリーを削除するタスクです。
+
+====

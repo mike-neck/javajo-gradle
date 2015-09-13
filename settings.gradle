@@ -6,7 +6,7 @@ ext {
         [
                 parent: it.parent,
                 dirs: it.dir.listFiles().findAll {
-                    it.isDirectory() && !(it.name in ['.gradle', 'biuld'])
+                    it.isDirectory() && !(it.name in ['.gradle', 'biuld', 'images'])
                 }
         ]
     }.collect {map ->

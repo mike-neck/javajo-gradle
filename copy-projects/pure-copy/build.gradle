@@ -1,0 +1,11 @@
+apply plugin: 'base'
+
+if (file('answer.gradle').exists()) {
+    apply from: 'answer.gradle'
+}
+
+task copyJavaImage(type: Copy) {
+    from file('../images/java.jpg')
+    into "${buildDir}/java-image"
+}
+
