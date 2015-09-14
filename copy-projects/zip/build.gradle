@@ -6,3 +6,13 @@ task zipServer(type: Zip) {
     destinationDir = file("${buildDir}/server-image")
 }
 
+task zipIntoDist(type: Zip) {
+    from fileTree('../images')
+    into 'dist'
+    baseName 'with-into'
+}
+
+task zipWithoutInto(type: Zip) {
+    from fileTree('../images')
+    baseName 'without-into'
+}

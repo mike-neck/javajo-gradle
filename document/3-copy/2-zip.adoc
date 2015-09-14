@@ -74,4 +74,28 @@ task zipServer(type: Zip) {
 * 生成されるアーカイブの名前が `complex.zip` となるように設定してください。
 * アーカイブが生成されるディレクトリーは `build/exercise2` となるように設定してください。
 
+== `into` の動作
 
+`into` を指定するとアーカイブ中のディレクトリーの位置が指定されます。生成されるアーカイブのディレクトリーではなくなるので注意してください。
+
+.`into` を使った `Zip` タスクの例
+[source,groovy]
+----
+/* into を使ってアーカイブ内のディレクトリーの位置を指定 */
+task zipIntoDist(type: Zip) {
+  from fileTree('../images')
+  into 'dist'
+  baseName = 'with-into'
+}
+/* into を使わない */
+task zipWithoutInto(type: Zip) {
+  from fileTree('../images')
+  baseName = 'without-into'
+}
+----
+
+=== 演習3
+
+.上記の `zipIntoDist` および `zipWithoutInto` をそれぞれ実行した後に、それぞれを解凍してアーカイブ中の構造の様子を確認してください。
+* `zipIntoDist` で生成されたzipファイルのルートに `dist` ディレクトリーがあることを確認してください。
+* `zipWithoutInto` で生成されたzipファイルは `images` ディレクトリーと同じ構造になっていることを確認してください。
