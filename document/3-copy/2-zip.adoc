@@ -99,3 +99,34 @@ task zipWithoutInto(type: Zip) {
 .上記の `zipIntoDist` および `zipWithoutInto` をそれぞれ実行した後に、それぞれを解凍してアーカイブ中の構造の様子を確認してください。
 * `zipIntoDist` で生成されたzipファイルのルートに `dist` ディレクトリーがあることを確認してください。
 * `zipWithoutInto` で生成されたzipファイルは `images` ディレクトリーと同じ構造になっていることを確認してください。
+
+== 入力にタスクを指定する
+
+2章のセクション4でタスクの `inputs` にタスクを指定できたように、 `Copy` および `Zip` でも `from` にタスクを渡すことができます。
+
+=== 演習4
+
+.次のようなテキストファイルを出力するタスクの成果物をzipに固めるタスクを作成してください。
+* なお、出力するディレクトリーは `build/zip-langs` としてください。
+* zipファイルの名前は `langs.zip` としてください。
+
+.プログラミング言語名がファイル名であるテキストファイルを出力するタスク
+[source,groovy]
+----
+task fiveLangs {
+  def langs = [
+    'Java', 'Groovy', 'Scala',
+    'Kotlin', 'Clojure'
+  ]
+  def destDir = file("${buildDir}/langs")
+  outputs.dir (destDir)
+  doLast {
+    if (!destDir.exists()) {
+      destDir.mkdirs()
+    }
+    langs.each {
+      file("${destDir}/${it}.txt").write(it, 'UTF-8')
+    }
+  }
+}
+----

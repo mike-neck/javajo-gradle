@@ -1,5 +1,9 @@
 apply plugin: 'base'
 
+if (file('answer.gradle').exists()) {
+    apply from: 'answer.gradle'
+}
+
 task zipServer(type: Zip) {
     from '../images/server'
     baseName 'zip-server'
@@ -15,4 +19,21 @@ task zipIntoDist(type: Zip) {
 task zipWithoutInto(type: Zip) {
     from fileTree('../images')
     baseName 'without-into'
+}
+
+task fiveLangs {
+    def langs = [
+            'Java', 'Groovy', 'Scala',
+            'Kotlin', 'Clojure'
+    ]
+    def destDir = "${buildDir}/langs"
+    outputs.dir(file(destDir))
+    doLast {
+        if (!file(destDir).exists()) {
+            file(destDir).mkdirs()
+        }
+        langs.each {
+            file("${destDir}/${it}.txt").write(it, 'UTF-8')
+        }
+    }
 }
