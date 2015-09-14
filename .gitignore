@@ -41,3 +41,6 @@ todo/
 
 # exercise answer file
 answer.gradle
+
+# properties file for sample project
+codic.properties
