@@ -18,3 +18,15 @@ task copyTree(type: Copy) {
     from fileTree('../images/server')
     into "${buildDir}/copy-tree"
 }
+
+task copyOnlyPng(type: Copy) {
+    from '../images/tool'
+    into "${buildDir}/only-png"
+    include '*.png'
+}
+
+task copyNotPng(type: Copy) {
+    from '../images/tool'
+    into "${buildDir}/not-png"
+    exclude '*.png'
+}
