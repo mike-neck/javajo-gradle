@@ -36,6 +36,35 @@ Gradleのタスクには様々なタイプのタスクがあります。
 
 実際、 `Zip`, `Jar`, `Tar`, `War`, `Ear` タスククラスは `AbstractCopyTask` を継承したタスクになっています。
 
+.この章で扱うファイルについて
+[NOTE]
+====
+
+この章で扱うファイルは `copy-projects/images` ディレクトリーにあります。このディレクトリーの構造は次のようになっています。
+
+.ディレクトリー構造
+[source,text]
+----
+copy-projects/images/
+├── java.jpg
+├── jvm
+│   ├── groovy.png
+│   ├── java.jpg
+│   └── scala.png
+├── server
+│   ├── hadoop.jpg
+│   ├── solr.png
+│   └── web
+│       ├── jetty.png
+│       └── tomcat.png
+└── tool
+    ├── gradle.gif
+    ├── maven.png
+    └── sbt.jpg
+----
+
+====
+
 = `Copy` タスクの作り方
 
 `copy-projects/pure-copy` ディレクトリーに移動してください。
