@@ -1,8 +1,8 @@
 apply plugin: 'base'
 
 task zipServer(type: Zip) {
-    from '../images/server'  /* <1> */
-    baseName 'zip-server'  /* <2> */
-    destinationDir = file("${buildDir}/server-image") /* <3> */
+    from '../images/server'
+    baseName 'zip-server'
+    destinationDir = file("${buildDir}/server-image")
 }
 
