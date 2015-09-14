@@ -1,4 +1,5 @@
 apply plugin: 'idea'
+apply plugin: 'eclipse'
 
 ext {
     jdk = 1.8
@@ -16,5 +17,19 @@ idea {
         jdkName = jdk
         languageLevel = jdk
         vcs = 'Git'
+    }
+}
+
+task showAllJavaDeps {
+    doLast {
+        allprojects.findAll {
+            it.plugins.hasPlugin('java')
+        }.collect {
+            def config = it.configurations.runtime + it.configurations.testRuntime
+            [name: it.path, files: config.asPath]
+        }.each {
+            println "==${it.name}=="
+            println it.files
+        }
     }
 }
