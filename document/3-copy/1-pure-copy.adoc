@@ -167,4 +167,62 @@ task copyTree(type: Copy) {
 
 `copy-projects/images` の下にあるファイルをディレクトリー構造を維持したまま `build/images` ディレクトリーにコピーする `copyImages` タスクを作成してください。
 
+== ファイルのフィルタリング
+
+ファイルをコピーする際に特定の条件を指定したい場合などがあると思います。例えば、 `課題管理票.xlsx` はコピーするけど、 `課題管理票_bk.xlsx` はコピーしないなど。
+
+このようなコピーするファイルのフィルタリング機能を `Copy` タスクは提供してくれています。
+
+.pngファイルだけをコピーする
+[source,groovy]
+----
+task copyOnlyPng(type: Copy) {
+  from '../images/tool'
+  into "${buildDir}/only-png"
+  include '*.png'
+}
+----
+
+`include` を用いると指定されたパターンに合致するファイルだけがコピーの対象になります。
+
+.png以外のファイルをコピーする
+[source,groovy]
+----
+task copyNotPng(type: Copy) {
+  from '../images/tool'
+  into "${buildDir}/only-png"
+  exclude '*.png'
+}
+----
+
+`exclude` を用いると指定されたパターンに合致するファイルはコピーされません。
+
+.パターン文字列
+[TIP]
+====
+
+`include` および `exclude` はAntのパターン文字列で指定します。
+
+.Antのパターン文字列
+* `*` すべての文字列を含むファイル
+** `*.class` -> 拡張子が `class` のファイルすべて
+** `*Test$*` -> ファイル名の途中に `Test$` を含むファイルすべて
+* `**` すべての文字列を含むディレクトリー
+** `**tmp` -> `tmp` で終わるディレクトリーすべて
+** `tmp**` -> `tmp` で始まるディレクトリー
+** `**/img/*` -> すべてのディレクトリーの下にある `img` ディレクトリーの下にあるファイルすべて
+
+.指定例
+* `com/fasterxml/` の下にあるディレクトリーファイルすべて
+** `**/com/fasterxml/**/*`
+* 対象のディレクトリーの中からファイル名に `Test$` が含まれるファイルすべて
+** `**/*Test$*`
+
+====
+
+=== 演習4
+
+.上記の `copyOnlyPng` と `copyNotPng` タスクを実行してください。
+* `copyOnlyPng` がpngファイルだけをコピーしていることを確認して下さい。
+* `copyNotPng` がpngファイル以外をコピーしていることを確認して下さい。
 
