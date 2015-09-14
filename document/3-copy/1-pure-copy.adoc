@@ -226,3 +226,28 @@ task copyNotPng(type: Copy) {
 * `copyOnlyPng` がpngファイルだけをコピーしていることを確認して下さい。
 * `copyNotPng` がpngファイル以外をコピーしていることを確認して下さい。
 
+== より複雑なフィルタリング
+
+先ほどの例では `Copy` タスクの `include`/`exclude` を用いましたが、 `from` メソッドでフィルタリングを行うことも可能です。
+
+.`from` メソッドの `include`/`exclude`
+[source,groovy]
+----
+task copyComplex(type: Copy) {
+  from ('../images/jvm') { /* <1> */
+    exclude 'g*'
+  }
+  from ('../images/tool') { /* <2> */
+    include 'g*'
+  }
+}
+----
+<1> `images/jvm` ディレクトリーからは `g` で始まるファイル以外をコピーする
+<2> `images/tool` ディレクトリーからは `g` で始まるファイルのみをコピーする
+
+=== 演習5
+
+.上記の `copyComplex` タスクを実行してください。
+* `images/jvm` ディレクトリーから `scala.png` ファイルがコピーされているか確認して下さい。
+* `images/tool` ディレクトリーから `gradle.gif` ファイルがコピーされているか確認して下さい。
+

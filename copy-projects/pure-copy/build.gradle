@@ -30,3 +30,13 @@ task copyNotPng(type: Copy) {
     into "${buildDir}/not-png"
     exclude '*.png'
 }
+
+task copyComplex(type: Copy) {
+    from ('../images/jvm') {
+        exclude 'g*'
+    }
+    from ('../images/tool') {
+        include 'g*'
+    }
+    into "${buildDir}/copy-complex"
+}
