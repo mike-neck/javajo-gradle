@@ -1,9 +1,5 @@
 apply plugin: 'base'
 
-if (file('answer.gradle').exists()) {
-    apply from: 'answer.gradle'
-}
-
 task zipServer(type: Zip) {
     from '../images/server'
     baseName 'zip-server'
@@ -36,4 +32,8 @@ task fiveLangs {
             file("${destDir}/${it}.txt").write(it, 'UTF-8')
         }
     }
+}
+
+if (file('answer.gradle').exists()) {
+    apply from: 'answer.gradle'
 }
