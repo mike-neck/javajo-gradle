@@ -1,0 +1,71 @@
+= アーカイビングタスク
+
+成果物をzipファイルに固めるなどの処理はよく行われるタスクの一つです。
+
+このセクションではzipにアーカイブする方法について学習します。
+
+== `Zip` タスク
+
+`Zip` タスクは `AbstractCopy` タスクを継承したタスクで、ほとんどのメソッドは `AbstractCopy` に由来するものです。したがって、 `Copy` と同じような操作を行うことができます。
+
+.`Copy` タスクと異なる点
+* アーカイブ名を設定する
+* `into` の動作が `Copy` から想像できる動作とはことなる
+
+== アーカイブ名を設定する
+
+`Zip` タスクの主なプロパティとして以下のものが上げられます。
+
+.`Zip` タスクの主なプロパティ
+|===
+|プロパティ名 |内容 |デフォルト値
+
+|`baseName`
+|アーカイブの基本名
+|`project.archiveBaseName`(プロジェクト名)
+
+|`appendix`
+|アーカイブ名の補助的な名前(オプショナル)
+|`null`
+
+|`version`
+|アーカイブのバージョン(オプショナル)
+|`null`
+
+|`classifier`
+|アーカイブの識別名(オプショナル)
+|`null`
+
+|`extension`
+|アーカイブの拡張子
+|`zip`
+
+|`archiveName`
+|アーカイブ名
+|`"${baseName}-${appendix}-${version}-${classifier}.${extension}"`
+
+|`destinationDir`
+|アーカイブファイルが生成されるディレクトリー
+|`project.distsDir`(`build/distributions`)
+|===
+
+.`Zip` タスクの例
+[source,groovy]
+----
+task zipServer(type: Zip) {
+  from '../images/server'  /* <1> */
+  baseName 'zip-server'  /* <2> */
+  destinationDir = file("${buildDir}/server-image") /* <3> */
+}
+----
+<1> アーカイブ対象のファイルを指定する
+<2> アーカイブの基本名を設定する
+<3> zipファイルの生成されるディレクトリーを設定する
+
+=== 演習1
+
+.上記の `zipServer` タスクを実行してください。
+* 生成されたアーカイブのディレクトリーと名前を確認してください。
+* 生成されたアーカイブを解凍して、内容物が指定されたファイルと同じであるか確認してください。
+
+
