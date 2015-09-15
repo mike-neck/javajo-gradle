@@ -1,10 +1,10 @@
 = Gradleプロジェクトの作成
 
-Gradleにはhttps://docs.gradle.org/current/userguide/build_init_plugin.html[Build Init Plugin]というGradleプロジェクトを生成するプラグインがあります。
+Gradleには https://docs.gradle.org/current/userguide/build_init_plugin.html[Build Init Plugin] というGradleプロジェクトを生成するプラグインがあります。
 
 `mvn archetype:generate`に比べて圧倒的にテンプレートが少ないというより、機能不足すぎるわけですが、最低限のプロジェクト構成を生成することができます。
 
-なお、現在incubatingな機能なため、今後テンプレートタイプが詳細に指定できるようになるかもしれないし、taichiさんのQiitaの記事http://qiita.com/taichi@github/items/a4caab3a31dd5949a045[Gradle で initタスクをカスタマイズする方法]にあるようにオレオレテンプレートを作る方法が一般的になるかもしれません。
+なお、現在incubatingな機能なため、今後テンプレートタイプが詳細に指定できるようになるかもしれないし、taichiさんのQiitaの記事 http://qiita.com/taichi@github/items/a4caab3a31dd5949a045[Gradle で initタスクをカスタマイズする方法] にあるようにオレオレテンプレートを作る方法が一般的になるかもしれません。
 
 とりあえず、プロジェクトを作るのにいちいち`mkdir`コマンドを叩くのが面倒なときに使うとよいでしょう。
 
