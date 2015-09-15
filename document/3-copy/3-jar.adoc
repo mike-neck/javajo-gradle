@@ -34,3 +34,63 @@ task fatJar(type: Jar) {
 === 演習1
 
 上記の `fatJar` タスクを実行して、Fat Jarが作成されているか確認してください。また、作成されたjarファイル(実態はzipファイル)を解凍して、指定した通りのManifestファイルが作成されているか確認してください。
+
+.`zipTree` とは？
+[TIP]
+====
+
+zipにアーカイブされているファイルをあたかもファイルツリーのように扱えるようにする `project` のメソッドです。返されるのは `FileTree` インターフェースですので、必要になるまで中身が計算されることはありません。
+また、zipファイルだけでなく、tarファイルにも対応している `tarTree` というメソッドもあります。
+
+====
+
+.`manifest{}` ブロック
+[TIP]
+====
+
+`manifest{}` ブロック(オブジェクト)では次のようなことが可能です。
+
+
+.`Manifest` インターフェースの主なメソッド
+|===
+|メソッド |引数 |内容
+
+|`attributes`
+|`Map<String, ?>`
+|mainのアトリビュートに値を追加する。
+
+|`attributes`
+|`Map<String, ?>`, `String`
+|指定したセクションのアトリビュートに値を追加する。
+
+|`from`
+|`Object...`
+|指定されたマニフェストファイルをマージする。
+|===
+
+.`manifest{}` ブロックの利用例
+[source,groovy]
+----
+zip {
+  manifest {
+    attributes 'Main-Class': 'javajo.sample.AppMain',
+        'Created-By': "Gradle ${gradle.gradleVersion}"
+  }
+}
+----
+
+上記の `manifest{}` ブロックの記述で以下のような `MANIFEST.MF` ファイルが作成されます。
+
+[source,text]
+----
+Manifest-Version: 1.0
+Main-Class: javajo.sample.AppMain
+Created-By: Gradle 2.7
+----
+
+====
+
+=== 演習2
+
+`copy-projects/jar` は `java` プラグインが適用されていて、依存ライブラリーを用いた簡単なJavaプロジェクトとなっています。このプロジェクトから実行可能なJarファイルを作成するタスクを作成してください。
+なお、メインクラスは `javajo.sample.codic.CodicMain` クラスです。

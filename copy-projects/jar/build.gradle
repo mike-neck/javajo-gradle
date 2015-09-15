@@ -44,3 +44,7 @@ task fatJar(type: Jar) {
                 'Library-Version': version
     }
 }
+
+if (file('answer.gradle').exists()) {
+    apply from: 'answer.gradle'
+}
