@@ -1,0 +1,36 @@
+= `Jar` タスクの作り方
+
+`copy-projects/jar` ディレクトリーに移動してください。
+
+`Zip` タスクをほぼものにできたら、 `Jar` タスクをものにできたものと思ってもほとんどかまいません。
+
+ほぼ唯一の違いは `manifest{}` ブロックの存在です。
+(`destinationDir` がデフォルトで `libs` に設定されているという違いもある)
+
+== Fat Jarを作ってみる
+
+これはgoogleで検索すると、いくつも結果が出てくるものですが、 `Jar` タスクを理解するための最も簡単な題材です。
+
+.Fat Jarを作るタスク
+[source,groovy]
+----
+task fatJar(type: Jar) {
+  from (configurations.runtime.findAll {
+    !it.directory
+  }.collect {
+    zipTree(it)
+  }) {
+    exclude '**/META-INF/MANIFEST.MF'
+  }
+  destinationDir "${buildDir}/fat-jar"
+  baseName = 'all-jars'
+  manifest {
+    attributes 'Created-By': "Gradle ${gradle.gradleVersion}",
+        'Library-Version': version
+  }
+}
+----
+
+=== 演習1
+
+上記の `fatJar` タスクを実行して、Fat Jarが作成されているか確認してください。また、作成されたjarファイル(実態はzipファイル)を解凍して、指定した通りのManifestファイルが作成されているか確認してください。

@@ -9,6 +9,8 @@ ext {
     encoding = 'UTF-8'
 }
 
+version = '0.1'
+
 repositories {
     jcenter()
 }
@@ -24,4 +26,21 @@ tasks.withType(JavaCompile) {
     sourceCompatibility = jdk
     targetCompatibility = jdk
     options.encoding = encoding
+}
+
+task fatJar(type: Jar) {
+    from (configurations.runtime.findAll {
+        !it.directory
+    }.collect {
+        zipTree(it)
+    }) {
+        exclude '**/META-INF/MANIFEST.MF'
+        exclude '**/META-INF/maven/**/*'
+    }
+    destinationDir = file("${buildDir}/fat-jar")
+    baseName = 'all-jars'
+    manifest {
+        attributes 'Created-By': "Gradle ${gradle.gradleVersion}",
+                'Library-Version': version
+    }
 }
