@@ -93,4 +93,36 @@ public class FractionTest {
         Fraction right = fraction(10, -6);
         assertThat(left, is(right));
     }
+
+    @Test
+    public void 足し算2分の1足す1は2分の3() {
+        Fraction fraction = fraction(1, 2);
+        assertThat(fraction.plus(1), is(fraction(3, 2)));
+    }
+
+    @Test
+    public void 足し算マイナス3分の2足す1は3分の1() {
+        Fraction fraction = fraction(-2, 3);
+        assertThat(fraction.plus(1), is(fraction(1, 3)));
+    }
+
+    @Test
+    public void 足し算マイナス3分の4足す1はマイナス3分の1() {
+        Fraction fraction = fraction(4, -3);
+        assertThat(fraction.plus(1), is(fraction(-1, 3)));
+    }
+
+    @Test
+    public void 足し算4分の1足す3分の2は12分の11() {
+        Fraction left = fraction(1, 4);
+        Fraction right = fraction(2, 3);
+        assertThat(left.plus(right), is(fraction(11, 12)));
+    }
+
+    @Test
+    public void 足し算マイナス3分の2足す6分の1はマイナス2分の1() {
+        Fraction left = fraction(-2, 3);
+        Fraction right = fraction(1, 6);
+        assertThat(left.plus(right), is(fraction(-1, 2)));
+    }
 }

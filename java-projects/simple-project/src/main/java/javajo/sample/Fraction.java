@@ -16,6 +16,7 @@
 package javajo.sample;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -74,8 +75,32 @@ public final class Fraction {
         this.denominator = right / gcd;
     }
 
+    @Contract(pure = true)
+    public long getSignedNumerator() {
+        return negative ? - numerator : numerator;
+    }
+
+    /**
+     * マイナス値かどうか調べる
+     * @return - マイナス値なら{@code true}、プラス値なら{@code false}
+     */
     public boolean isNegative() {
         return negative;
+    }
+
+    @NotNull
+    @Contract("_ -> !null")
+    public Fraction plus(long number) throws IllegalArgumentException {
+        return plus(new Fraction(number));
+    }
+
+    @NotNull
+    @Contract("null -> fail")
+    public Fraction plus(Fraction fr) throws IllegalArgumentException {
+        if (fr == null) throw new IllegalArgumentException("Null value cannot be added.");
+        long leftNumerator = getSignedNumerator() * fr.denominator;
+        long rightNumerator = fr.getSignedNumerator() * denominator;
+        return new Fraction(leftNumerator + rightNumerator, denominator * fr.denominator);
     }
 
     @Contract(pure = true)
