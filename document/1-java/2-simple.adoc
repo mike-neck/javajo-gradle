@@ -1,0 +1,266 @@
+= 簡単なJavaのサンプルプロジェクト
+
+`java-projects/simple-project` に移動してください。
+
+このディレクトリーは先ほど `init` タスクで `--type java-library` で作成したような構成になっており、
+`build.gradle` ファイルは現在ほぼ空っぽになっています。
+
+ここにJavaアプリケーション用のビルドスクリプトを書いていきます。
+
+== `java` プラグインを適用する
+
+Gradleは単なるタスクの自動実行基盤なので、プラグインを何も適用していない場合は、ほとんど何もできません。
+
+今のこのプロジェクトもプラグインを何も適用していないので、ほぼ何もできません。
+
+=== 演習0
+
+`java-projects/simple-project` がほぼ何もできないことを確かめてみてください。
+Gradleでは `tasks` タスクによって、現在できること(実行できるタスク)を確認することができます。
+
+.Gradleが何をすることができるか確かめる方法
+[source,sh]
+----
+$ gradle tasks
+----
+
+Javaに関するタスクが何も表示されないことを確認してください。
+
+=== 演習1
+
+Javaに関するタスクが利用可能になるように、 `java` プラグインを適用してください。
+
+.Gradleにプラグインを適用する方法(その1)
+[source,groovy]
+----
+apply plugin: 'plugin-id'
+----
+
+.Gradleにプラグインを適用する方法(その2)
+[source,groovy]
+----
+plugins {
+  id 'plugin-id' version 'plugin-version'
+}
+----
+
+.`tasks` タスクによって、次のように表示されれば `java` プラグインが適用できた状態です。
+[source,text]
+----
+------------------------------------------------------------
+All tasks runnable from root project
+------------------------------------------------------------
+
+Build tasks
+-----------
+assemble - Assembles the outputs of this project.
+build - Assembles and tests this project.
+buildDependents - Assembles and tests this project and all projects that depend on it.
+buildNeeded - Assembles and tests this project and all projects it depends on.
+classes - Assembles classes 'main'.
+clean - Deletes the build directory.
+jar - Assembles a jar archive containing the main classes.
+testClasses - Assembles classes 'test'.
+
+Documentation tasks
+-------------------
+javadoc - Generates Javadoc API documentation for the main source code.
+
+Verification tasks
+------------------
+check - Runs all checks.
+test - Runs the unit tests.
+
+
+----
+
+また、まだこの段階ではコンパイルができないことを `classes` タスクを実行して確認してください。
+
+[source,text]
+----
+$ gradle classes
+----
+
+=== 演習2
+
+プロジェクト内で使うことのできる変数を設定してください。
+
+.設定して欲しい変数
+|===
+|変数名 |型 |値
+
+|`jdk`
+|`String` or `double`
+|`1.8`
+
+|`encoding`
+|`String`
+|`UTF-8`
+|===
+
+=== 演習3
+
+コンパイルが落ちないようにするために下記のライブラリーをコンパイル時に参照できるようにしてください。
+
+.ライブラリー
+|===
+|属性 |値
+
+|`group`
+|`org.jetbrains`
+
+|`name`(`artifactId`)
+|`annotations`
+
+|`version`
+|`13:0`
+|===
+
+
+.ライブラリーを参照できるようにする方法
+[source,groovy]
+----
+dependencies {
+  /* ライブラリー参照の方法1 */
+  compile group: 'group.name', name: 'library-name', version: 'library-version'
+  /* ライブラリー参照の方法2 */
+  compile 'group.name:library-name:library-version'
+}
+----
+
+ライブラリーの指定方法は下記のいずれかで指定できます。
+
+.`Map` で指定する方法
+|===
+|キー |指定する値
+
+|`group`
+|Mavenの `groupId`
+
+|`name`
+|Mavenの `artifactId`
+
+|`version`
+|Mavenの `version`
+|===
+
+.`String` で指定する方法
+[source,groovy]
+----
+/* groupIdとartifactIdとversionをコロン(:)でつなぐ */
+'groupId:artifactId:version'
+----
+
+=== 演習4
+
+まだ依存性(ライブラリー)を解決できないので、依存性を解決するためのレポジトリーにjcenterリポジトリーかmaven centralリポジトリーを登録してください。
+
+.依存性解決用のレポジトリーを登録する方法
+[source,groovy]
+----
+repositories {
+  /* Maven Central レポジトリーを依存性解決に使う */
+  mavenCentral()
+  /* jcenterレポジトリーを依存性解決に使う */
+  jcenter()
+  /* 独自のmavenレポジトリーを依存性解決に使う */
+  maven {
+    /* レポジトリーのURL */
+    url 'https://repo.my-company.com/m2'
+    /* レポジトリーに認証が必要な場合 */
+    credentials(PasswordCredentials) {
+      username myRepositoryUser
+      password myRepositoryPassword
+    }
+  }
+  /* 独自のivyレポジトリーを依存性解決に使う */
+  ivy {
+    url 'https://repo.my-company.com/ivy'
+    credentials {
+      username = ivyRepoUser
+      password = ivyRepoPassword
+    }
+  }
+}
+----
+
+.`credentials` が `PasswordCredentials` の場合に設定する項目
+* `username` - ユーザー名
+* `password` - パスワード
+
+.`credentials` が `AwsCredentials` の場合に設定する項目
+* `accessKey` - アクセスキー
+* `secretKey` - シークレットキー
+
+以上の状態で `dependencies` タスクを実行すると次のように表示されるか確認してください。
+
+.`dependencies` タスクの実行結果
+[source,text]
+----
+:dependencies
+
+------------------------------------------------------------
+Root project
+------------------------------------------------------------
+
+archives - Configuration for archive artifacts.
+No dependencies
+
+compile - Compile classpath for source set 'main'.
+\--- org.jetbrains:annotations:13.0
+
+default - Configuration for default artifacts.
+\--- org.jetbrains:annotations:13.0
+
+runtime - Runtime classpath for source set 'main'.
+\--- org.jetbrains:annotations:13.0
+
+testCompile - Compile classpath for source set 'test'.
+\--- org.jetbrains:annotations:13.0
+
+testRuntime - Runtime classpath for source set 'test'.
+\--- org.jetbrains:annotations:13.0
+
+BUILD SUCCESSFUL
+----
+
+=== 演習5
+
+現在の状態でも `classes` タスクに失敗する環境の人もいますので、コンパイルオプションを下記の通り設定してください。
+
+.Javaコンパイルオプションの設定
+|===
+|設定したい項目 |設定したい値
+
+|`-source` オプション
+|`1.8`
+
+|`-target` オプション
+|`1.8`
+
+|`-encoding` オプション
+|`UTF-8`
+|===
+
+要件にもよりますが、リストを用いる方法あるいは、 `tasks.withType(Class<? extends Task>)` を用いる方法のいずれかで設定します。
+
+.リストを用いる場合
+[source,groovy]
+----
+[compileJava, compileTestJava].each {
+  it.sourceCompatibility = '1.8'
+  it.targetCompatibility = '1.8'
+  it.options.encoding = 'UTF-8'
+}
+----
+
+.`tasks.withType(Class<? extends Task>)` を用いる場合
+[source,groovy]
+----
+tasks.withType(JavaCompile) {
+  sourceCompatibility = '1.8'
+  targetCompatibility = '1.8'
+  options.encoding = 'UTF-8'
+}
+----
+
