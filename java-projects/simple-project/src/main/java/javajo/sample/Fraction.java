@@ -74,6 +74,10 @@ public final class Fraction {
         this.denominator = right / gcd;
     }
 
+    public boolean isNegative() {
+        return negative;
+    }
+
     @Contract(pure = true)
     @Override
     public String toString() {
