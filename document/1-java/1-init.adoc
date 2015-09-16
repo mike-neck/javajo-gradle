@@ -8,9 +8,7 @@ Gradleには https://docs.gradle.org/current/userguide/build_init_plugin.html[Bu
 
 とりあえず、プロジェクトを作るのにいちいち `mkdir` コマンドを叩くのが面倒なときに使うとよいでしょう。
 
-= 演習
-
-=== 1. typeの指定なしでプロジェクトをinitする
+== 演習1 typeの指定なしでプロジェクトをinitする
 
 `java-projects/init-project/no-type` ディレクトリーに移動して、次のコマンドを入力してください。
 
@@ -46,7 +44,7 @@ $ gradle init
 
 '''
 
-=== 2. java library type
+== 演習2 java library type
 
 次は少しまともな `init` タスクを実行します。
 
@@ -96,7 +94,7 @@ $ gradle init --type java-library
 
 '''
 
-=== 3. groovy library type
+== 演習3 groovy library type
 
 次はGroovyタイプのテンプレートを作成します。
 
@@ -141,7 +139,7 @@ $ gradle init --type groovy-library
 * テスト用のライブラリーに `spock` の `1.0-groovy-2.4` が用いられている
 * テスト用のライブラリーに `junit` の `4.12` が用いられている(transitive dependencyで実は指定する必要がないのは内緒だよ)
 
-=== 4. Scala library type
+== 演習4 Scala library type
 
 Gradleはsbtほど厳密ではない(らしい)けど、Scalaプロジェクトのビルドも可能です。
 
