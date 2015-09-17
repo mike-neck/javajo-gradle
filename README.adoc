@@ -1,0 +1,99 @@
+= Java女子部 Gradleふんわり入門
+
+https://javajo.doorkeeper.jp/events/31185[Java女子部 Gradleふんわり入門] の資料です。
+
+主に次のレベルの方を想定してGradleの講義・ハンズオンを行います。
+
+* Java SE8の入門レベルの知識のある方
+* ビルドって何のこと？っていう方
+* プロジェクトの成果物を作成するために手作業をおこなっている方
+* Gradleをプロジェクトで利用しているが、何をどう設定するべきなのかわからない方
+
+既にカスタムタスクを書いている方や、プラグインを作成している方には絶対に物足りない内容になります。
+
+= 開催概要
+
+* 日付
+* 2015年9月27日(日)
+* 場所
+* http://www.albert2005.co.jp/access/[株式会社ALBERT様]
+** 東京都新宿区西新宿1-26-2 新宿野村ビル15F
+* 開催時刻
+* 13:00〜17:00
+
+= 前提知識
+
+* Java SE8の入門レベルの知識があること(特に`java.util.Optional`)
+* お好きなIDEを使いこなせていること
+* 講演者はIntelliJ IDEAのサポートは出来ますが、その他のIDEのサポートはできません。
+* また、講演資料のプロジェクトはIntelliJ IDEAに特化して作成されておりますが、eclipseその他のIDEで認識できるかについては自身がありません。
+* WindowsあるいはLinuxあるいはMacのターミナルの基本的なコマンドを知っていること
+* `cd`、`ls -la`(Windowsでは`DIR`)、`mkdir`、`mv`(Windows…忘れた(´・ω・｀))など
+
+= 内容
+
+. Gradleについて概要
+. Javaプロジェクトをいじってみる
+. 自分でタスクを作ってみる
+. Copyタスクを扱えるようになる(首尾よく行けばJarタスクまで)
+
+= 事前にしてきてほしいこと
+
+* jdk1.8u60のインストールと、環境変数`JAVA_HOME`の設定
+* このリポジトリーをzipでダウンロードするか、cloneして、ネットワークのつながった状態にて、ルートディレクトリーで次のコマンドを叩いてきてください。
+* この作業はGradle-2.7をダウンロードしますが、それなりのトラフィックがあり、時間がかかることが想定されます。
+
+=== Windowsの方
+
+[source]
+----
+> gradlew.bat sAJD
+----
+
+=== Mac/Linuxの方
+
+[source]
+----
+$ ./gradlew sAJD
+----
+
+== Gradleをご自身の環境に構築したい方へ
+
+=== Windowsの方
+
+Gradleの公式から https://services.gradle.org/distributions/gradle-2.7-all.zip[ダウンロード]して、 `PATH` が通るように設定してください。
+
+=== Mac/Linuxの方
+
+http://sdkman.io/[sdkman] を参考に以下のコマンドでsdkmanをインストールした上で、下記のコマンドでインストールしてください。
+
+[source]
+----
+$ curl -s http://get.gvm.io | bash
+$ export SDKMAN_DIR="/path/to/user/.sdkman"
+$ source "/path/to/user-home/.sdkman/bin/sdkman-init.sh"
+$ sdk install gradle 2.7
+----
+
+また、sdkmanの初期不良のためか、新しいターミナルを開いた時にsdkコマンドが利用できなくなることがあるようです。
+
+その場合には、 `.bash_profile` に下記のコードを追記してください。
+
+[source,bash]
+----
+export SDKMAN_DIR="/path/to/user-home/.sdkman"
+[[ -s "/path/to/user-home/.sdkman/bin/sdkman-init.sh" && -z $(which sdkman-init.sh | grep '/sdkman-init.sh') ]] && source "/path/to/user-home/.sdkman/bin/sdkman-init.sh"
+----
+
+== gvmをすでにお使いの方
+
+gvmが諸(go version managerと名前がバッティングする)事情により、gvmがなくなり、sdkmanにかわりました。
+gvmからsdkmanに移行していただくようお願いします。
+
+.gvmからsdkmanへの移行方法
+[source]
+----
+$ gvm selfupdate force
+$ export SDKMAN_DIR="/path/to/user-home/.sdkman"
+$ source "/path/to/user-home/.sdkman/bin/sdkman-init.sh"
+----

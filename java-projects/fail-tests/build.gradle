@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+}
+
+ext {
+    jdk = 1.8
+    encoding = 'UTF-8'
+}
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = jdk
+    targetCompatibility = jdk
+    options.encoding = encoding
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'org.jetbrains:annotations:13.0'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core-java8:1.0.0m1'
+}

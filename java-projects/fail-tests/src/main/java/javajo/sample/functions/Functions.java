@@ -63,11 +63,11 @@ public final class Functions {
     }
 
     /**
-     * {@link Functions.ExFunction}を{@link Functions.Function}に変換する関数
-     * @param exf - {@link Functions.ExFunction} 例外許容関数。{@code null}は許されない。
+     * {@link ExFunction}を{@link Function}に変換する関数
+     * @param exf - {@link ExFunction} 例外許容関数。{@code null}は許されない。
      * @param <I> - 関数の入力型
      * @param <O> - 関数の出力型
-     * @return - {@link Functions.Function} ラップされた関数。
+     * @return - {@link Function} ラップされた関数。
      * @throws EvaluatingException 渡された関数が{@code null}だった場合に送出される。
      */
     @NotNull
@@ -130,7 +130,7 @@ public final class Functions {
     }
 
     /**
-     * {@link Functions.ExGenerator}から{@link Functions.Generator}に変換する関数
+     * {@link ExGenerator}から{@link Generator}に変換する関数
      * @param exg 例外許容生成型
      * @param <O> 生成型
      * @return ラップされた生成型
@@ -197,7 +197,7 @@ public final class Functions {
     }
 
     /**
-     * {@link Functions.ExOperator}を{@link Functions.Operator}に変換する関数
+     * {@link ExOperator}を{@link Operator}に変換する関数
      * @param exo 例外許容処理型の値
      * @param <I> 入力値の型
      * @return ラップされた処理型
@@ -264,10 +264,10 @@ public final class Functions {
     }
 
     /**
-     * {@link javajo.sample.functions.Functions.ExCondition}を{@link javajo.sample.functions.Functions.Condition}に変換する
+     * {@link ExCondition}を{@link Condition}に変換する
      * @param exc - 例外許容条件型
      * @param <S> - テスト対象の型
-     * @return - ラップされた{@link javajo.sample.functions.Functions.Condition}
+     * @return - ラップされた{@link Condition}
      * @throws EvaluatingException - 入力された条件型が{@code null}の場合に送出される。
      */
     @NotNull
