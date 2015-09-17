@@ -98,6 +98,68 @@ $ gradle classes
 |`UTF-8`
 |===
 
+.Gradleでの変数
+[TIP]
+====
+
+Gradleでの変数はプロパティとも呼ばれます。
+これは `project` オブジェクトの `properties` に値を保持するためです。
+具体的にどのような形でプロパティが提供されるのかは後述しますが、
+ここではユーザーによるextraプロパティと呼ばれるプロパティの定義方法を紹介します。
+
+.extraプロパティでのプロパティ定義
+[source,groovy]
+----
+ext.myName = '@mike_neck'
+ext {
+  junitVersion = '4.12'
+  junit = "junit:junit:${junitVersion}"
+}
+----
+
+extraプロパティに値を定義することによって、ビルドスクリプト内部ではプロパティ名としてその値を利用することが可能になります。
+
+.extraプロパティの利用
+[source,groovy]
+----
+println myName /* -> @mike_neck と表示される */
+----
+
+====
+
+.Groovyの `String` について
+[TIP]
+====
+
+Groovyの `String` リテラルはシングルクォート( `'` )で囲むことで記述することができます。
+`char` 型はどうなるのか心配されるかもしれませんが、Groovyの `String` には `as(Class<?>)` というメソッドによって
+`char` 型に変換することが可能です。
+
+.Groovyの `String` リテラル
+[source,groovy]
+----
+def myName = '@mike_neck'
+def a = 'a' as char /* -> char の a */
+def x = 'xyz' as char /* -> char の x */
+def one = '1' as int /* -> int の 1 */
+def ten = '10-java' as int /* -> NumberFormatException */
+----
+
+さらにGroovyには `GString` という `String` を拡張したクラスがあります。
+そちらのリテラルはダブルクォート( `"` )で囲みます。
+`GString` では `${}` の中で式を展開して文字列に埋め込むことができます。
+
+.Groovyの `GString`
+[source,groovy]
+----
+def myName = "@mike_neck"
+def hello = "Hello, $myName." /* -> Hello, @mike_neck. */
+def calc = "1 + 1 = ${1 + 1}" /* -> 1 + 1 = 2 */
+def midNight = "Good night, ${myName.replace('_', '')}." /* -> Good night, @mikeneck. */
+----
+
+====
+
 === 演習3
 
 コンパイルが落ちないようにするために下記のライブラリーをコンパイル時に参照できるようにしてください。
@@ -247,11 +309,9 @@ BUILD SUCCESSFUL
 .リストを用いる場合
 [source,groovy]
 ----
-[compileJava, compileTestJava].each {
-  it.sourceCompatibility = '1.8'
-  it.targetCompatibility = '1.8'
-  it.options.encoding = 'UTF-8'
-}
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 ----
 
 .`tasks.withType(Class<? extends Task>)` を用いる場合
@@ -264,3 +324,24 @@ tasks.withType(JavaCompile) {
 }
 ----
 
+.Gradleのプロパティ
+[TIP]
+====
+
+Gradleでは次の機序でプロパティを探します
+
+.プロパティの5つのスコープ
+. `project` オブジェクト自信のプロパティ
+. extraプロパティ
+. プラグインによって追加されたextension
+. プラグインによって追加されたconventionプロパティ
+. プロジェクトのタスク名
+. 親プロジェクトで追加されたextraプロパティとconventionプロパティ
+
+なお、
+
+* 本勉強会ではプラグインを作ることは学習の対象外なので、2.と3.については特に説明しません。
+** プラグインで追加されるプロパティがあるという記述にとどめます。
+* サブプロジェクトについても学習の対象外としているので、6.についても詳しくは説明しません。
+
+====
