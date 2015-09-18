@@ -1,0 +1,351 @@
+= テストについて
+
+このセクションではJavaプロジェクトにおけるテストについて学習していきます。
+
+.このセク書について
+* やること
+** `test` タスクの実行・設定を実際におこなう
+* 達成してほしいこと
+** `test` タスクの機能・設定を実際に覚えてもらって効果的なテストを実行できるようになる
+* ディレクトリー
+** `java-projects/fail-tests`
+
+== テストが落ちる
+
+`java-projects/fail-tests` は少々問題のあるプロジェクトです。早速ですがテストを実行してみてください。
+
+=== 演習1
+
+このプロジェクトのテストを実行してください。
+
+テストは下記のコマンドで実行できます。
+
+[source]
+----
+gradle test
+----
+
+このテストは次のようなメッセージを出力して終了します。
+
+[source,text]
+----
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':java-projects:fail-tests:test'.
+> There were failing tests. See the report at: file:///path/to/javajo-gradle/java-projects/fail-tests/build/reports/tests/index.html
+
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output.
+
+BUILD FAILED
+
+Total time: 1 mins 43.254 secs
+----
+
+テスト結果のレポートのURLが表示されるので、ブラウザーをひらいて見てみましょう。
+
+.テストレポートサマリー
+image::../images/report-1.png[テストレポート画面]
+
+落ちたテスト名のリンクをクリックすると、実際のテストエラーの内容が表示されます。
+
+.テストエラーの内容
+image::../images/report-2.png[エラー詳細]
+
+テストが落ちた原因は次のようです。
+
+.テストエラーの詳細
+[source,text]
+----
+java.lang.NullPointerException
+	at javajo.sample.data.MaybeTest$MappingTest.someのfmapにnullを返す関数を渡すとNothingになる(MaybeTest.java:205)
+----
+
+エラーのあった箇所を調べると、実装がまずそうですね。
+
+=== 演習2
+
+実装を修正した後、テストを再実行してください。
+
+.ヒント
+* 実装が間違っているのは `javajo.sample.data.MaybeBase` の121行目あたりです。
+* インターフェース `Maybe<T>` のメソッド `fmap(Function<T, R> mapper)` では関数 `mapper` が `null` を返す場合は、メソッドとしては `Nothing` を返すことを求めています。
+** 詳しくは `javajo.sample.data.Maybe` の71行目を参照ください。
+
+.このようになれば成功です
+[source]
+----
+$ gradle test
+Picked up _JAVA_OPTIONS: -Dfile.encoding=UTF-8
+:compileJava
+:processResources
+:classes
+:compileTestJava
+:processTestResources UP-TO-DATE
+:testClasses
+:test
+
+BUILD SUCCESSFUL
+
+Total time: 1 mins 42.378 secs
+----
+
+再び、先ほどのレポートをブラウザーで開いてみましょう。
+
+.成功したテストのレポート
+image::../images/report-3.png[すべてグリーン]
+
+== 遅いテスト
+
+テストを実行して実感されていると思いますが、テストがとても遅いです。
+
+Gradleではテストを並列して実行する仕組みが提供されています。
+
+.テストを並列して実行する(並列数2)
+[source,groovy]
+----
+test {
+  maxParallelForks = 2
+}
+----
+
+=== 演習3
+
+* 並列実行数を2に設定してテストを実行してください。
+* 並列実行数を4に設定してテストを実行してください。
+* 並列実行数を5に設定してテストを実行してください。
+
+並列数4よりも並列数5の方が速くなると予想できますが、実際は遅くなってしまいます。
+
+実際に僕の環境では次のような結果になりました。
+
+.並列数とかかった時間
+|===
+|並列数 |時間
+
+|1(default)
+|`1m42sec`
+
+|2
+|`53sec`
+
+|3
+|`43sec`
+
+|4
+|`35sec`
+
+|5
+|`50sec`
+
+|6
+|`26sec`
+
+|7
+|`26sec`
+
+|8
+|`26sec`
+|===
+
+
+これはGradleのテスト並列実行の仕組みに関係があります。
+Gradleのテスト並列実行はクラス名を名前でソートして、その順番で各プロセスに割り当てます。
+
+例えば、1という時間で終わるテストクラスが4個、5という時間で終わるテストクラスが2個あるとします。
+
+これをテストクラス名でソートした時に次のように並ぶものとします。
+
+.テストクラス名でソートした結果
+|===
+|テスト名 |時間
+
+|A
+|1
+
+|B
+|1
+
+|C
+|5
+
+|D
+|1
+
+|E
+|1
+
+|F
+|5
+|===
+
+このテストを並列数2で実行するときに、[A,C,E]、[B,D,F]でそれぞれのプロセスに割り当てた場合のテスト実行時間は次のように `7` となります。
+
+.並列数2でテストを実行した場合
+|===
+|テスト/実行時間 |テスト/実行時間 |テスト/実行時間 |実行時間合計
+
+|A
+|C
+|E
+|-
+
+|1
+|5
+|1
+|7
+
+|B
+|D
+|F
+|-
+
+|1
+|1
+|5
+|7
+|===
+
+一方、並列数を3で各プロセスに対してテストが[A,D]、[B,E]、[C,F]と割り当てられた場合のテスト時間は次のとおり10となります。
+
+.並列数3でテストを実行した場合
+|===
+|テスト/実行時間 |テスト/実行時間 |実行時間合計
+
+|A
+|D
+|-
+
+|1
+|1
+|2
+
+|B
+|E
+|-
+
+|1
+|1
+|2
+
+|C
+|F
+|-
+
+|5
+|5
+|10
+|===
+
+このようなことが発生することは稀だとは思いますが、並列数をあげたにもかかわらずテスト実行時間が改善しない場合にはこのような可能性があることも考慮するとよいと思います。
+
+== 重複されて実行されるテスト
+
+再び、テストレポートの `javajo.sample.data.MaybeTest$NothingTest` の結果を見てください。
+テストが重複していることがわかります。
+
+.テストが重複している
+image::../images/report-4.png[テストが重複している]
+
+これはJUnitで `@RunWith(Enclosed.class)` を付与したクラスのインナークラスのテストケースで発生する現象です。
+この事象について、現在のところGradleのissueにも上がっていませんし、デザインドキュメントを参照しても対応に関する記述がないので、
+スクリプトでフィルタリングしておいたほうがよいでしょう。
+
+テストクラスをフィルタリングするメソッドとしてGradleは下記の二つのメソッドを提供しています。
+
+.フィルタリングするメソッド
+|===
+|メソッド名 |引数の型 |内容
+
+|`exclude`
+|`String...` +
+`Iterable<String>` +
+`Closure<Boolean>`
+|除外するクラスファイルのパターンを指定する。 +
+このメソッドが呼ばれない場合はすべてのテストが実行される。 +
+`Closure` で指定する場合の引数は `FileTreeElement`(`File` のちょっと拡張されたクラス)。
+
+|`include`
+|`String...` +
+`Iterable<String>` +
+`Closure`
+|実行するクラスファイルのパターンを指定する。 +
+このメソッドが呼ばれない場合はすべてのテストが実行される。 +
+`Closure` で指定する場合の引数は `FileTreeElement` 。
+|===
+
+これらのフィルタリングルールは `test{}` ブロックの中で指定します。
+
+.テスト対象クラスのフィルタリング
+[source,groovy]
+----
+test {
+  /* 任意のディレクトリーにある Test$ という名称を含むクラスファイルを除外する */
+  exclude '**/*Test$*'
+}
+----
+
+=== 演習4
+
+インナークラスのクラスファイルが `OuterTest$InnerTest.class` となることを利用して、重複をなくしてテストを実行するようにスクリプトを更新してください。
+
+テストが終わったら、あらためてテストレポートを開いて、テストの重複がなくなっていることを確認してください。
+
+.重複のなくなったテストレポート
+image::../images/report-5.png[重複がなくなっている]
+
+.`@RunWith(Enclosed.class)` を使う場合の注意
+[TIP]
+====
+
+この演習では、テスト対象クラス `Target` に対して、必ず `TargetTest` という名称を付与することという命名規約があったからこそ、シンプルなスクリプトで重複を除外することができました。
+これが特に何の命名規約がない場合は、スクリプトが複雑になっていたでしょう。
+
+テストクラスの名称については規約を決めておいたほうがシンプルになります。
+
+====
+
+= まとめ
+
+以上で基本的なテストに関するスクリプトの記述ができるようになりました。
+
+.For more study
+* テスト実行によるプロダクションコードのカバレージを取得したい
+** `extra.gradle` に カバレージツールのJaCoCoを使う例が掲載されていますので、参考にしてください。
+* `@Category` を使って詳細にテスト実行の制御をやりたい場合
+** 僕のブログのエントリー http://mike-neck.hatenadiary.com/entry/2014/07/08/015251[gradleでJUnitのCategoryテストを実行する - 2014年版] などを参照してください。
+** また、テストタスクを複数にわけると、テストレポートが一つにならないと思います。その場合は、次のようなタスクを追加して、レポートをまとめることができます。
+
+.複数のテストタスクのレポートをまとめる
+[source,groovy]
+----
+ext {
+  /* 遅いテスト/普通のテスト/速いテストのカテゴリー */
+  categories = [
+    slow: 'sample.categories.SlowTests',
+    normal: 'sample.categories.NormalTests',
+    fast: 'sample.categories.FastTests'
+  ]
+}
+/* それぞれのカテゴリーのテスト用のタスクを作る */
+categories.each {name, cat ->
+  task (type: Test, dependsOn: 'testClasses', "${name}Test") {
+    group = 'Category Test'
+    description = "Runs Category[${cat}] tests."
+    useJUnit {
+      includeCategories [cat] as Set
+    }
+    binResultDir = file("${buildDir}/${name}/bin")
+    reports.html.destination = file("${buildDir}/${name}/html")
+    reports.junitXml.destination = file("${buildDir}/${name}/xml")
+  }
+}
+/* テストレポートをまとめるタスク */
+task categoryTest(type: TestReport, group: 'verification tasks') {
+  def taskNames = categories.collect {it.key}.collect {"${it}Test"}
+  description = 'Run all categories tests.'
+  reportOn taskNames.collect{project.tasks[it]}
+  destinationDir = file("${buildDir}/test-report")
+}
+----
