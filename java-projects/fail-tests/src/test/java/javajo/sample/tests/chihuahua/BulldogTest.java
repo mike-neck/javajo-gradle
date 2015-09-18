@@ -20,21 +20,21 @@ public class BulldogTest {
 
     @Test
     public void testName() throws InterruptedException {
-        Thread.sleep(1200l);
+        Thread.sleep(3000l);
         assertThat(testTime.getTestName())
                 .isEqualTo("testName");
     }
 
     @Test
     public void className() throws InterruptedException {
-        Thread.sleep(1200l);
+        Thread.sleep(3000l);
         assertThat(testTime.getClassName())
                 .isEqualTo("javajo.sample.tests.chihuahua.BulldogTest");
     }
 
     @Test
     public void stamp() throws InterruptedException {
-        Thread.sleep(1200l);
+        Thread.sleep(3000l);
         assertThat(testTime.getStamp())
                 .contains("javajo.sample.tests.chihuahua.BulldogTest#stamp");
     }

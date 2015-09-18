@@ -28,7 +28,7 @@ def srcDir = project.resolve('src/test/java')
 def rootPackage = 'javajo.sample.tests'
 
 def names = [
-        'sheepdog', 'foxhound', 'bulldog', 'chihuahua', 'dalmatian'
+        sheepdog: true, foxhound: true, bulldog: false, chihuahua: false, dalmatian: true
 ]
 
 def asTypeName = {String name ->
@@ -36,10 +36,11 @@ def asTypeName = {String name ->
 }
 
 names.each {pkg ->
-    def packageName = "$rootPackage.$pkg"
+    def packageName = "$rootPackage.${pkg.key}"
     def dir = srcDir.resolve(packageName.replace('.','/'))
     names.each {name ->
-        def type = "${asTypeName(name)}Test"
+        def type = "${asTypeName(name.key)}Test"
+        def time = name.value ? '200l' : '3000l'
         def classContents = """
 package ${packageName};
 
@@ -62,21 +63,21 @@ public class ${type} {
 
     @Test
     public void testName() throws InterruptedException {
-        Thread.sleep(1200l);
+        Thread.sleep(${time});
         assertThat(testTime.getTestName())
                 .isEqualTo("testName");
     }
 
     @Test
     public void className() throws InterruptedException {
-        Thread.sleep(1200l);
+        Thread.sleep(${time});
         assertThat(testTime.getClassName())
                 .isEqualTo("${packageName}.${type}");
     }
 
     @Test
     public void stamp() throws InterruptedException {
-        Thread.sleep(1200l);
+        Thread.sleep(${time});
         assertThat(testTime.getStamp())
                 .contains("${packageName}.${type}#stamp");
     }
