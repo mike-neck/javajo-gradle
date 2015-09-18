@@ -305,3 +305,47 @@ image::../images/report-5.png[重複がなくなっている]
 テストクラスの名称については規約を決めておいたほうがシンプルになります。
 
 ====
+
+= まとめ
+
+以上で基本的なテストに関するスクリプトの記述ができるようになりました。
+
+.For more study
+* テスト実行によるプロダクションコードのカバレージを取得したい
+** `extra.gradle` に カバレージツールのJaCoCoを使う例が掲載されていますので、参考にしてください。
+* `@Category` を使って詳細にテスト実行の制御をやりたい場合
+** 僕のブログのエントリー http://mike-neck.hatenadiary.com/entry/2014/07/08/015251[gradleでJUnitのCategoryテストを実行する - 2014年版] などを参照してください。
+** また、テストタスクを複数にわけると、テストレポートが一つにならないと思います。その場合は、次のようなタスクを追加して、レポートをまとめることができます。
+
+.複数のテストタスクのレポートをまとめる
+[source,groovy]
+----
+ext {
+  /* 遅いテスト/普通のテスト/速いテストのカテゴリー */
+  categories = [
+    slow: 'sample.categories.SlowTests',
+    normal: 'sample.categories.NormalTests',
+    fast: 'sample.categories.FastTests'
+  ]
+}
+/* それぞれのカテゴリーのテスト用のタスクを作る */
+categories.each {name, cat ->
+  task (type: Test, dependsOn: 'testClasses', "${name}Test") {
+    group = 'Category Test'
+    description = "Runs Category[${cat}] tests."
+    useJUnit {
+      includeCategories [cat] as Set
+    }
+    binResultDir = file("${buildDir}/${name}/bin")
+    reports.html.destination = file("${buildDir}/${name}/html")
+    reports.junitXml.destination = file("${buildDir}/${name}/xml")
+  }
+}
+/* テストレポートをまとめるタスク */
+task categoryTest(type: TestReport, group: 'verification tasks') {
+  def taskNames = categories.collect {it.key}.collect {"${it}Test"}
+  description = 'Run all categories tests.'
+  reportOn taskNames.collect{project.tasks[it]}
+  destinationDir = file("${buildDir}/test-report")
+}
+----
