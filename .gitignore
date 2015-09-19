@@ -45,3 +45,6 @@ answer.gradle
 # properties file for sample project
 codic.properties
 yahoo.properties
+
+# auto generated source codes
+**/gen/
