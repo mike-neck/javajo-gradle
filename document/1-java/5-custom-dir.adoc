@@ -1,0 +1,194 @@
+= ディレクトリー構造のカスタマイズ
+
+Gradleプロジェクトは常に一から作るものではなく、場合によっては既存のプロジェクトをGradleプロジェクト化することもあります。
+
+このセクションでは規約と異なるディレクトリー構造のプロジェクトをGradleプロジェクト化する方法を学びます。
+
+.このセクションについて
+* やること
+** 通常のディレクトリー構造とは異なる構造になっているプロジェクトをGradleプロジェクト化する
+* 達成してほしいこと
+** `SourceSet` の扱い方の基本を覚える
+* ディレクトリー
+** `java-projects/custom-directory`
+
+== ディレクトリー構造の再確認
+
+セクション1ではプロジェクトの基本的なディレクトリー構造を学びました。ここで復習します。
+
+.基本的なディレクトリー構造
+[source]
+----
+java-projects/simple-project/
+├── build.gradle
+├── gradle
+│   └── wrapper
+├── simple-project.iml
+└── src
+    ├── main
+    │   ├── java
+    │   └── resources
+    └── test
+        ├── java
+        └── resources
+----
+
+では `java-projects/custom-directory` のディレクトリー構造を確認してみましょう。
+
+.`java-projects/custom-directory` の構造
+[source]
+----
+java-projects/custom-directory
+├── build.gradle
+├── gen          <-- 生成されたソースのディレクトリー
+├── gradle
+│   └── wrapper
+├── gradlew
+├── gradlew.bat
+├── res          <-- resourceディレクトリー
+├── src          <-- Javaのソースディレクトリー
+└── test
+    ├── res      <-- テスト用のresourceディレクトリー
+    └── src      <-- テスト用のソースディレクトリー
+----
+
+通常の構造である、 `src/main/java` や `src/test/java` などがありません。
+
+== ビルドしてみる
+
+ではこのプロジェクトで `build` タスクを実行するとどうなるでしょう。
+
+.`build` タスクを実行
+[source]
+----
+$ gradle build
+deleteGenerated
+compileJava UP-TO-DATE
+processResources UP-TO-DATE
+classes UP-TO-DATE
+jar
+assemble
+compileTestJava UP-TO-DATE
+processTestResources UP-TO-DATE
+testClasses UP-TO-DATE
+test UP-TO-DATE
+check UP-TO-DATE
+build
+
+BUILD SUCCESSFUL
+
+Total time: 1.327 secs
+----
+
+意外なことに `build` は成功します。
+
+では生成された `jar` ファイル(実態は `zip` ファイル)を解凍して中身を確認してみましょう。
+
+.`custom-directory.jar` の中身
+[source]
+----
+build/libs/files/
+└── META-INF
+    └── MANIFEST.MF
+----
+
+残念ながら、一つのクラスファイルも作成されていません。
+
+この結果は、先ほどの `build` タスク実行時に、ソースファイルがあるにも関わらず `classes` タスクが `UP-TO-DATE`(実行されなかった)となっていることからもうかがえます。
+
+== ソースの位置を確認する
+
+ソースの位置をGradleに知らせるためのDSLが `sourceSets` という `SourceSetContainer` 型のプロパティおよび `sourceSets{}` ブロックです。
+
+=== 演習1
+
+`sourceSets` は `SourceSetContainer` という型のオブジェクトで、 `SourceSet` のコレクションです。現在保持している `SourceSet` の名前とディレクトリーを表示するタスク `showSourceSets` というタスクを `build.gradle` に作成してあるので、実行してください。
+
+== ソースの位置をGradleに知らせる
+
+演習1で `sourceSets` に含まれるオブジェクトには名前があることがわかりました。
+
+`sourceSets{}` ブロックでディレクトリーの位置を変更する場合次のような書式で指定します。
+
+.`sourceSets{}` ブロックでディレクトリーの位置を修正するDSL
+[source, groovy]
+----
+sourceSets {
+  /* ここには名前を指定する */
+  name {
+    /* javaのソースセット */
+    java {
+      /* srcDir メソッドでディレクトリーの位置をGradleに知らせる */
+      srcDir 'path/to/source'
+    }
+    /* resourcesのソースセット */
+    resources {
+      /* srcDirs メソッドで複数のディレクトリーの位置をGradleに知らせる */
+      srcDirs 'path/to/resources', 'path/to/another/resources'
+    }
+  }
+}
+----
+
+=== 演習2
+
+* 上記のDSLを用いて、 `src` ディレクトリーがJavaのソースディレクトリーであることをGradleに知らせるスクリプトを書いてください。
+** 記述した後、先ほどの `showSourceSets` タスクで設定が反映されているか確認してください。
+** 現在の状態で `build` タスクを実行するとどうなるか確認してください。
+
+現段階ではまだテスト用のディレクトリーの設定がなされていないので、テストの実行どころかコンパイルもできません。
+
+=== 演習3
+
+* テスト用のJavaファイルがコンパイル対象となるように `sourceSets{}` ブロックを修正してください。
+* リソース(プロダクション/テスト)両方が認識されるように `sourceSets{}` ブロックを修正してください。
+** 修正後、先ほどの `showSourceSets` タスクで設定が反映されているか確認してください。
+** 現在の状態で `build` タスクを実行するとどうなるか確認してください。
+
+== アノテーションプロセッサーでソースを生成した場合の対応
+
+演習3の段階で、 `build` タスクをおこなうと、テストのコンパイルでエラーが発生します。
+これはアノテーションプロセッサーで出力したソースが `sourceSets.main.java` に入っていないためです。
+
+アノテーションプロセッサーを利用する場合は、生成されるソースコードのディレクトリーが `sourceSets.main.java`(生成されるコードがプロダクション用の場合) あるいは `sourceSets.test.java`(生成されるコードがテスト用の場合)に含まれるように設定する必要があります。
+
+=== 演習4
+
+* アノテーションプロセッサーで生成されるディレクトリー `gen` が `sourceSets.main.java` に含まれるように `sourceSets{}` ブロックを修正してください。
+** `showSourceSets` タスクで設定が反映されているか確認してください。
+** 現在の状態で `build` タスクが通ることを確認してください。
+
+= まとめ
+
+以上で、規約に沿わないディレクトリー構造のプロジェクトをGradleプロジェクト化するための、 `sourceSets{}` ブロックの使い方を学びました。
+
+.For more study
+* ユニットテストだけでなく、統合テストをおこなうときは新たにソースセットを定義する必要があります。その場合は次のように新たなソースセットを宣言するとよいでしょう。
+
+.新しいソースセットの宣言
+[source,groovy]
+----
+sourceSets {
+  integTest
+}
+----
+
+.デフォルトの定義
+* 上記の宣言によって生成されるデフォルトのソースセットの定義は以下のとおりです。
+
+.デフォルトのソースセット
+|===
+|ソース |ディレクトリー
+
+|Javaファイル
+|`src/integTest/java`
+
+|リソースファイル
+|`src/integTest/resources`
+|===
+
+また、上記のようにソースセットを追加した場合は下記の `configuration` が自動で追加されます。
+
+.追加される `configuration`
+* `integTestCompile` - コンパイル時のクラスパスに指定される依存ライブラリー
+* `integTestRuntime` - 実行時クラスパスに指定される依存ライブラリー

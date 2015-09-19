@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+}
+
+if (file('answer.gradle').exists()) {
+    apply from: 'answer.gradle'
+}
+
+ext {
+    jdk = '1.8'
+    encoding = 'UTF-8'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'net.vvakame:jsonpullparser-apt:1.6.2'
+    compile 'net.vvakame:jsonpullparser-core:1.6.2'
+    compile 'com.owlike:genson:1.3'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core-java8:1.0.0m1'
+}
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = jdk
+    targetCompatibility = jdk
+    options.encoding = encoding
+}
+
+task deleteGenerated(type: Delete) {
+    delete(file('gen'))
+}
+
+tasks.clean.dependsOn tasks.deleteGenerated
+
+compileJava {
+    dependsOn tasks.clean
+    doFirst {
+        mkdir file('gen')
+    }
+    options.compilerArgs += ['-s', file('gen'), '-AJsonPullParserClassPostfix=JppAdapter']
+}
+
+task showSourceSets(group: 'help') {
+    description = 'Displays source set names and their directory'
+    doLast {
+        project.sourceSets.each {
+            println "name [${it.name}] (configuration[${it.compileConfigurationName}], compileJavaTask[${it.compileJavaTaskName}])"
+            def javaDir = it.java.srcDirs.collect {"${it}".replace("${projectDir}/", '')}.join('\n                     ')
+            def resDir = it.resources.srcDirs.collect {"${it}".replace("${projectDir}/", '')}.join('\n                     ')
+            println "    java source dir: ${javaDir}"
+            println "    resources dir  : ${resDir}"
+        }
+    }
+}

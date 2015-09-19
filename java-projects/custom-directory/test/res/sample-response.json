@@ -1,0 +1,25 @@
+[
+  {
+    "successful":true,
+    "text":"\u53d6\u5f97",
+    "translated_text":"acquisition",
+    "words":[
+      {
+        "successful":true,
+        "text":"\u53d6\u5f97",
+        "translated_text":"acquisition",
+        "candidates":[
+          {
+            "text":"acquisition"
+          },{
+            "text":"get"
+          },{
+            "text":"acquired"
+          },{
+            "text":"fetch"
+          }
+        ]
+      }
+    ]
+  }
+]
