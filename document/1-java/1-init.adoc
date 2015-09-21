@@ -1,6 +1,6 @@
 = Gradleプロジェクトの作成
 
-Gradleには https://docs.gradle.org/current/userguide/build_init_plugin.html[Build Init Plugin] というGradleプロジェクトを生成するプラグインがあります。
+Gradleには https://docs.gradle.org/current/userguide/build_init_plugin.html[Build Init Plugin] というGradleプロジェクトを生成するプラグインがあります。(詳しくは <<引用>> 参照)
 
 `mvn archetype:generate` に比べて圧倒的にテンプレートが少ないというより、機能不足すぎるわけですが、最低限のプロジェクト構成を生成することができます。
 
@@ -199,3 +199,19 @@ $ gradle init --type scala-library
 * パッケージ階層を構築
 * お好みの依存ライブラリーを設定する
 * お好みのプラグインを適用する
+
+== 引用
+
+.https://docs.gradle.org/current/userguide/build_init_plugin.html[Build Init Plugin] より引用
+[quote, 'https://docs.gradle.org/current/userguide/build_init_plugin.html[Build Init Plugin]']
+----
+The Build Init plugin is an automatically applied plugin, which means you do not need to apply it explicitly. To use the plugin, simply execute the task named init where you would like to create the Gradle build. There is no need to create a “stub” build.gradle file in order to apply the plugin.
+----
+
+.意訳
+----
+init プラグインは自動的に適用されるプラグインです。つまり明示的に適用すると宣言しなくて良いのです。このプラグインを使うには、Gradleプロジェクトを作りたいディレクトリーで init タスクを実行すればよいだけです。これを使うには、事前に build.gradle ファイルを用意する必要はありません。
+----
+
+Gradleは単なるタスク実行基盤であって、プラグインを適用して初めてタスクやその他の便利な機能を利用することができます。 `build.gradle` ファイルのない状態においては、唯一 `Build init` プラグインのみが適用された状態になっています。
+プラグインなどについては、この後に説明していきます。
