@@ -177,7 +177,7 @@ def midNight = "Good night, ${myName.replace('_', '')}." /* -> Good night, @mike
 |`annotations`
 
 |`version`
-|`13:0`
+|`13.0`
 |===
 
 
