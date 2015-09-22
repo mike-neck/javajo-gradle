@@ -2,7 +2,7 @@
 
 Gradleのタスクには様々なタイプのタスクがあります。
 
-* `JavaCompile`, `GroovyCompile`, 'Javadoc' などのコンパイル系タスク
+* `JavaCompile`, `GroovyCompile`, `Javadoc` などのコンパイル系タスク
 * `Exec`, `JavaExec` などの実行系タスク
 * `Test`, `FindBugs`, `CheckStyle`, `CodeNarc`, `Pmd` などのチェック系タスク
 * `PublishToMavenRepository`, `PublishToIvyRepository`, `Upload` などのアップロード系タスク

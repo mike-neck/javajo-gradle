@@ -4,7 +4,7 @@ Gradleには https://docs.gradle.org/current/userguide/build_init_plugin.html[Bu
 
 `mvn archetype:generate` に比べて圧倒的にテンプレートが少ないというより、機能不足すぎるわけですが、最低限のプロジェクト構成を生成することができます。
 
-なお、現在incubatingな機能なため、今後テンプレートタイプが詳細に指定できるようになるかもしれないし、taichiさんのQiitaの記事 http://qiita.com/taichi@github/items/a4caab3a31dd5949a045[Gradle で initタスクをカスタマイズする方法] にあるようにオレオレテンプレートを作る方法が一般的になるかもしれません。
+なお、現在incubating(先進的)な機能なため、今後テンプレートタイプが詳細に指定できるようになるかもしれないし、taichiさんのQiitaの記事 http://qiita.com/taichi@github/items/a4caab3a31dd5949a045[Gradle で initタスクをカスタマイズする方法] にあるようにオレオレテンプレートを作る方法が一般的になるかもしれません。
 
 とりあえず、プロジェクトを作るのにいちいち `mkdir` コマンドを叩くのが面倒なときに使うとよいでしょう。
 
@@ -95,7 +95,7 @@ $ gradle init --type java-library
 この `init` で生成されるプロジェクトは次のようなものです。
 
 * `java` プラグインが適用されている
-* repositoryに `jcenter` が指定されている
+* レポジトリーに `jcenter` が指定されている
 * `slf4j` の `1.7.12` に `compile` スコープで依存している
 * `junit` の `4.12` に `testCompile` スコープで依存している
 
@@ -192,7 +192,7 @@ $ gradle init --type scala-library
 この `init` タスクで生成されるプロジェクトは次のようなものです。
 
 * `scala` プラグインが適用されている
-* `jcenter` がレポジトリーに指定されている
+* レポジトリーに `jcenter` が指定されている
 * Scalaのバージョンは `2.11.7`
 * テスト用のライブラリーに `scalatest_2.11` のバージョン `2.2.5` が用いられている
 * テスト用のライブラリーに `junit` の `4.12` が用いられている
@@ -215,14 +215,14 @@ $ gradle init --type scala-library
 
 .https://docs.gradle.org/current/userguide/build_init_plugin.html[Build Init Plugin] より引用
 [quote, 'https://docs.gradle.org/current/userguide/build_init_plugin.html[Build Init Plugin]']
-----
+====
 The Build Init plugin is an automatically applied plugin, which means you do not need to apply it explicitly. To use the plugin, simply execute the task named init where you would like to create the Gradle build. There is no need to create a “stub” build.gradle file in order to apply the plugin.
-----
+====
 
 .意訳
-----
+====
 init プラグインは自動的に適用されるプラグインです。つまり明示的に適用すると宣言しなくて良いのです。このプラグインを使うには、Gradleプロジェクトを作りたいディレクトリーで init タスクを実行すればよいだけです。これを使うには、事前に build.gradle ファイルを用意する必要はありません。
-----
+====
 
 Gradleは単なるタスク実行基盤であって、プラグインを適用して初めてタスクやその他の便利な機能を利用することができます。 `build.gradle` ファイルのない状態においては、唯一 `Build init` プラグインのみが適用された状態になっています。
 プラグインなどについては、この後に説明していきます。
