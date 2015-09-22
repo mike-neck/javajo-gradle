@@ -26,7 +26,7 @@ https://javajo.doorkeeper.jp/events/31185[Java女子部 Gradleふんわり入門
 * Java SE8の入門レベルの知識があること(特に`java.util.Optional`)
 * お好きなIDEを使いこなせていること
 * 講演者はIntelliJ IDEAのサポートは出来ますが、その他のIDEのサポートはできません。
-* また、講演資料のプロジェクトはIntelliJ IDEAに特化して作成されておりますが、eclipseその他のIDEで認識できるかについては自身がありません。
+* また、講演資料のプロジェクトはIntelliJ IDEAに特化して作成されておりますが、eclipseその他のIDEで認識できるかについては自信がありません。
 * WindowsあるいはLinuxあるいはMacのターミナルの基本的なコマンドを知っていること
 * `cd`、`ls -la`(Windowsでは`DIR`)、`mkdir`、`mv`(Windows…忘れた(´・ω・｀))など
 
