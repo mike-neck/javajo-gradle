@@ -75,9 +75,9 @@ Groovyの `java.io.File` にはJDK標準のメソッドの他に便利なメソ�
 |`String encoding`
 |指定したエンコーディングでファイルの内容を読み込む
 
-|'<<'
-|'void'
-|'String'
+|`<<`
+|`void`
+|`String`
 |ファイル末尾に文字列を追加する
 |===
 
@@ -211,7 +211,7 @@ Groovy
 Scala
 ----
 
-上記の内容を保持した `String` のインスタンス `text` があるとします。これの各行の先頭に `* ` を付与して表示する操作は次のとおりです。
+上記の内容を保持した `String` のインスタンス `text` があるとします。これの各行の先頭に `&#42;&nbsp;` を付与して表示する操作は次のとおりです。
 
 .`eachLine` メソッド
 [source,groovy]
@@ -233,7 +233,7 @@ text.eachLine {
 
 == 演習4(結構ハイレベル)
 
-`build.gradle` ファイルに、`javajo-gradle/task-projects/output-text/files` ディレクトリー以下のすべてのファイルの一覧を`all-files.txt` というファイルに書き出すタスク `listAllFiles` タスクを作成してください。
+`build.gradle` ファイルに、`javajo-gradle/task-projects/output-text/files` ディレクトリー以下のすべてのファイルの一覧を `all-files.txt` というファイルに書き出すタスク `listAllFiles` タスクを作成してください。
 
 .`file` 系メソッドをもう少し
 [TIP]
