@@ -12,3 +12,100 @@
 ** どれそれでのマシンでしかビルドできない
 
 依存性管理ではプロジェクトが依存するライブラリーのバージョンの管理・分析、バージョンのコンフリクト(ライブラリーが同一でもバージョンが異なること)の検出などの機能を提供します。
+
+== 依存性管理の単位
+
+Gradleでは依存性管理の単位として `Configuration` を提供しています。 `Configuration` はファイルの集合です。 `Configuration` に依存ライブラリーを宣言することで、プロジェクトの依存ライブラリーを管理していきます。
+
+この `Configuration` を管理するのが `ConfigurationContainer` で、 DSLでは `configurations` オブジェクトでアクセスすることができます。
+
+== Javaプロジェクトにおける `Configuration`
+
+Javaプロジェクトでは次の `Configuration` がデフォルトで提供されています。
+
+.Javaプロジェクトのデフォルト `Configuration`
+|===
+|名前 |継承元 |利用シーン
+
+|`compile`
+|-
+|Javaソースコードをコンパイルする際に参照する依存ライブラリー
+
+|`runtime`
+|`compile`
+|作成されたJavaアプリケーション(ライブラリー)を動かす際に参照する依存ライブラリー
+
+|`testCompile`
+|`compile`
+|テスト用のJavaソースコードをコンパイルする際に参照する依存ライブラリー
+
+|`testRuntime`
+|`testCompile`
+|テストを動かす際に参照する依存ライブラリー
+
+|`default`
+|`runtime`
+|このプロジェクトの成果物を利用する際に依存ライブラリー
+
+|`archives`
+|-
+|成果物をアップロードする際に参照する依存ライブラリー(`maven` プラグインで利用する)
+|===
+
+.依存ライブラリーの指定(再掲)
+[TIP]
+====
+
+依存ライブラリーを指定する場合は `dependencies{}` ブロック内で次のように指定します。
+
+.依存ライブラリーの指定
+[source,groovy]
+----
+dependencies {
+  /* Stringで指定する場合 */
+  configurationName 'groupName:artifactId:version'
+  /* Mapで指定する場合 */
+  configurationName group: groupName, name: artifactId, version: version
+}
+----
+
+====
+
+=== 演習1
+
+* `java-projects/dep-project/java-conf` ディレクトリーに移動してください。
+* `dependencies` タスクによって、上述のような `Configuration` の継承関係があることを確認してください。
+
+なお、このプロジェクトには次のような依存ライブラリーを指定しています。
+
+.依存ライブラリー
+|===
+|`Configuration` |`group` |`name` |`version`
+
+|`compile`
+|`javax.json`
+|`javax.json-api`
+|`1.0`
+
+|`runtime`
+|`com.owlike`
+|`genson`
+|`1.3`
+
+|`testCompile`
+|`javax.inject`
+|`javax.inject-tck`
+|`1`
+
+|`testCompile`
+|`junit`
+|`junit`
+|`4.12`
+
+|`testRuntime`
+|`com.squareup.dagger`
+|`dagger`
+|`1.2.2`
+|===
+
+
