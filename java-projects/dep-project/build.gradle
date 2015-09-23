@@ -1,0 +1,30 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+
+    repositories {
+        jcenter()
+    }
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    def sub = findProject(':java-conf') == null ? ':java-projects:dep-project:java-conf' : ':java-conf'
+    compile project(sub)
+    testCompile files('libs/junit.jar')
+}
+
+task showTestDep(group: 'help') {
+    description = "Displays all test dependencies files for project '${project.path}'."
+    doLast {
+        configurations.testCompile.each {
+            println it.absolutePath
+        }
+    }
+}

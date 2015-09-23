@@ -48,3 +48,6 @@ yahoo.properties
 
 # auto generated source codes
 **/gen/
+
+# flat file dependency
+!java-projects/dep-project/libs/junit.jar

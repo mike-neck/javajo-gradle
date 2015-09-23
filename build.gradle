@@ -21,6 +21,7 @@ idea {
 }
 
 task showAllJavaDeps {
+    dependsOn ':java-projects:dep-project:java-conf:dependencies'
     doLast {
         allprojects.findAll {
             it.plugins.hasPlugin('java')
