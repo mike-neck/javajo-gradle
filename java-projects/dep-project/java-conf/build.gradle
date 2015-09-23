@@ -1,0 +1,22 @@
+
+dependencies {
+    compile 'javax.json:javax.json-api:1.0'
+    runtime 'com.owlike:genson:1.3'
+    testCompile 'javax.inject:javax.inject-tck:1'
+    testCompile 'junit:junit:4.12'
+    testRuntime 'com.squareup.dagger:dagger:1.2.2'
+}
+
+task jarDoc(type: Jar, dependsOn: tasks.javadoc) {
+    from tasks.javadoc
+    classifier = 'javadoc'
+}
+
+task jarSrc(type: Jar) {
+    from sourceSets.main.java
+    classifier = 'sources'
+}
+
+artifacts {
+    archives tasks.jar, tasks.jarDoc, tasks.jarSrc
+}

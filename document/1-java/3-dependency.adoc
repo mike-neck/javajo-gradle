@@ -1,0 +1,223 @@
+= 依存性管理
+
+依存性管理というのはどのような言語にも必ず存在する問題です。
+
+依存するライブラリーのバージョンが異なるためにビルドできない、実行できないといった問題として発生します。
+
+また、かつてのJavaのプロジェクトではプロジェクトのディレクトリー内に `lib` と名のついたディレクトリーを準備して、そこに依存するライブラリーを配置して利用する方法などがとられてきました。
+この方法による問題は次のとおりです。
+
+* ソフトウェアが大きくなるに伴い、ライブラリーのバージョンを上げるためのコストが肥大化する
+* プロジェクトをビルドできる環境の構築にかかるコストが増える
+** どれそれでのマシンでしかビルドできない
+
+依存性管理ではプロジェクトが依存するライブラリーのバージョンの管理・分析、バージョンのコンフリクト(ライブラリーが同一でもバージョンが異なること)の検出などの機能を提供します。
+
+== 依存性管理の単位
+
+Gradleでは依存性管理の単位として `Configuration` を提供しています。 `Configuration` はファイルの集合です。 `Configuration` に依存ライブラリーを宣言することで、プロジェクトの依存ライブラリーを管理していきます。
+
+この `Configuration` を管理するのが `ConfigurationContainer` で、 DSLでは `configurations` オブジェクトでアクセスすることができます。
+
+== Javaプロジェクトにおける `Configuration`
+
+Javaプロジェクトでは次の `Configuration` がデフォルトで提供されています。
+
+.Javaプロジェクトのデフォルト `Configuration`
+|===
+|名前 |継承元 |利用シーン
+
+|`compile`
+|-
+|Javaソースコードをコンパイルする際に参照する依存ライブラリー
+
+|`runtime`
+|`compile`
+|作成されたJavaアプリケーション(ライブラリー)を動かす際に参照する依存ライブラリー
+
+|`testCompile`
+|`compile`
+|テスト用のJavaソースコードをコンパイルする際に参照する依存ライブラリー
+
+|`testRuntime`
+|`testCompile`
+|テストを動かす際に参照する依存ライブラリー
+
+|`default`
+|`runtime`
+|このプロジェクトの成果物を利用する際に依存ライブラリー
+
+|`archives`
+|-
+|成果物をアップロードする際に参照する依存ライブラリー(`maven` プラグインで利用する)
+|===
+
+.依存ライブラリーの指定(再掲)
+[TIP]
+====
+
+依存ライブラリーを指定する場合は `dependencies{}` ブロック内で次のように指定します。
+
+.依存ライブラリーの指定
+[source,groovy]
+----
+dependencies {
+  /* Stringで指定する場合 */
+  configurationName 'groupName:artifactId:version'
+  /* Mapで指定する場合 */
+  configurationName group: groupName, name: artifactId, version: version
+}
+----
+
+====
+
+=== 演習1
+
+* `java-projects/dep-project/java-conf` ディレクトリーに移動してください。
+* `dependencies` タスクによって、上述のような `Configuration` の継承関係があることを確認してください。
+
+なお、このプロジェクトには次のような依存ライブラリーを指定しています。
+
+.依存ライブラリー
+|===
+|`Configuration` |`group` |`name` |`version`
+
+|`compile`
+|`javax.json`
+|`javax.json-api`
+|`1.0`
+
+|`runtime`
+|`com.owlike`
+|`genson`
+|`1.3`
+
+|`testCompile`
+|`javax.inject`
+|`javax.inject-tck`
+|`1`
+
+|`testCompile`
+|`junit`
+|`junit`
+|`4.12`
+
+|`testRuntime`
+|`com.squareup.dagger`
+|`dagger`
+|`1.2.2`
+|===
+
+== 依存性の指定いろいろ
+
+ここまでは、依存ライブラリーの指定方法は `group` 、 `name`(`artifactId`)、 `version` を指定する方法だけを扱ってきました。
+これは実際にはExternal module dependenciesと呼ばれる外部ライブラリーを参照する依存性の一つです。
+
+.様々なdependencies
+* External module dependencies
+* Client module dependencies
+* Project dependencies
+* File dependencies
+* Gradle API dependencies
+
+ここではProject dependenciesおよびFile dependenciesについて説明していきます。
+
+.他のdependencies
+[NOTE]
+====
+
+今回は省略したClient module dependenciesおよびGradle API dependenciesは次のようなものです。
+
+.Client module dependencies
+NOTE: より細かくtransitive dependencies(推移的依存性)を指定したい場合に用います。
+
+.Gradle API dependencies
+NOTE: Gradleプラグインを作成する場合に用います。
+
+====
+
+=== Project dependencies
+
+複数のプロジェクト構成のプロジェクトで、あるサブプロジェクトが他のサブプロジェクトを依存ライブラリーとして指定する
+
+.Project dependenciesの指定方法
+[source,groovy]
+----
+dependencies {
+  compile project(':sub-project-name')
+}
+----
+
+サブプロジェクト(`sub-project-name`)にてExternal module dependenciesが指定されている場合、このサブプロジェクトを参照しているプロジェクトはサブプロジェクト(`sub-project-name`)の `default` `Configuration` に依存するようになります。
+
+.`project` メソッド
+[TIP]
+====
+
+`project(String)` メソッドはプロジェクトのサブプロジェクトを取得するメソッドです。指定するプロジェクトの文字列はプロジェクト名の頭にセミコロン(`:`)を付与したプロジェクトパス形式の文字列を指定します。
+
+.ディレクトリー構成
+[source]
+----
+root
+├── child1
+│   └── grandchild
+└── child2
+----
+
+例えば、上記のように `child1` と `child2` というサブプロジェクト、 `child1` の下に `grandchild` という孫プロジェクトで構成されるプロジェクトを想定します。
+
+このとき、 `root` プロジェクトから見て、それぞれのパスは次のようになります。
+
+.プロジェクトのパス
+|===
+|プロジェクト名 |プロジェクトパス
+
+|`child1`
+|`:child1`
+
+|`child2`
+|`:child2`
+
+|`grandchild`
+|`:child1:grandchild`
+|===
+
+この時に、 `root` プロジェクトが `child2` プロジェクトを参照する場合は `project(':child2')` と `project` メソッドを呼び出します。
+
+====
+
+=== File dependencies
+
+直接jarファイルを依存ライブラリーとして指定します。なお、指定する場合はファイルの数が一つであっても `files` メソッドに渡してください。
+
+.File dependenciesの指定方法
+[source,groovy]
+----
+dependencies {
+  /* filesメソッドでFileCollectionを渡します */
+  compile files('libs/junit.jar')
+}
+----
+
+==== 演習2
+
+`java-projects/dep-project` に移動してください。
+
+.下記の条件を満たす依存関係を `dep-project` に指定してください
+* `compile` が サブプロジェクト `java-conf` に依存する
+** ただし、 `java-conf` プロジェクトへの正しいパス文字列(`:java-conf`)を取得するために、 `getSubProject` というメソッドを作成してありますので、それを利用してください
+* `testCompile` がjarファイル `libs/junit.jar` に依存する
+
+なお、確認は `dependencies` タスクでも構いませんが、 `showTestDep` という `testRuntime` に登録されているファイルをすべて表示するタスクを作ってありますので、そちらを使ってください。
+
+次のように出力されれば成功です。
+
+[source]
+----
+:showTestDep
+/path/to/javajo-gradle/java-projects/dep-project/libs/junit.jar
+/path/to/javajo-gradle/java-projects/dep-project/java-conf/build/libs/java-conf.jar
+/path/to/home/.gradle/caches/.../javax.json-api-1.0.jar
+/path/to/home/.gradle/caches/.../genson-1.3.jar
+----

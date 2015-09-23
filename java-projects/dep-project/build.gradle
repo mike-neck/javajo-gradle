@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+/**
+ * rootから指定した場合を含めて、正しいjava-confプロジェクトのパスを返す
+ */
+def getSubProject = {String pjPath ->
+    def runFromRoot = findProject(pjPath) == null
+    runFromRoot ? "${path}${pjPath}" : pjPath
+}
+
+if (file('answer.gradle').exists()) {
+    apply from: 'answer.gradle'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+
+    repositories {
+        jcenter()
+    }
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+}
+
+task showTestDep(group: 'help') {
+    description = "Displays all test dependencies files for project '${project.path}'."
+    doLast {
+        configurations.testCompile.each {
+            println it.absolutePath
+        }
+    }
+}
