@@ -1,6 +1,18 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 
+/**
+ * rootから指定した場合を含めて、正しいjava-confプロジェクトのパスを返す
+ */
+def getSubProject = {String pjPath ->
+    def runFromRoot = findProject(pjPath) == null
+    runFromRoot ? "${path}${pjPath}" : pjPath
+}
+
+if (file('answer.gradle').exists()) {
+    apply from: 'answer.gradle'
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
@@ -15,9 +27,6 @@ repositories {
 }
 
 dependencies {
-    def sub = findProject(':java-conf') == null ? ':java-projects:dep-project:java-conf' : ':java-conf'
-    compile project(sub)
-    testCompile files('libs/junit.jar')
 }
 
 task showTestDep(group: 'help') {

@@ -17,7 +17,7 @@ ext {
             def pjs = !isInInit ?
                     [":${map.parent}:${it.name}" as String] :
                     it.listFiles().findAll {
-                        it.isDirectory() && !(it.name in ['gradle', 'build', 'src', '.gradle'])
+                        it.isDirectory() && !(it.name in ['gradle', 'build', 'src', '.gradle', 'libs'])
                     }.collect {
                         ":${map.parent}:${pn}:${it.name}" as String
                     }
