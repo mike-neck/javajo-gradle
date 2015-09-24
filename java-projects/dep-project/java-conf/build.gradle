@@ -1,8 +1,18 @@
+ext {
+    answer = project.file('answer.gradle').exists()
+}
+
+if(answer) {
+    apply from: 'answer.gradle'
+}
+
 
 dependencies {
     compile 'javax.json:javax.json-api:1.0'
     runtime 'com.owlike:genson:1.3'
-    testCompile 'javax.inject:javax.inject-tck:1'
+    if (!answer) {
+        testCompile 'javax.inject:javax.inject-tck:1'
+    }
     testCompile 'junit:junit:4.12'
     testRuntime 'com.squareup.dagger:dagger:1.2.2'
 }
