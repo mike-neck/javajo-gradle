@@ -209,10 +209,41 @@ dependencies {
 ** ただし、 `java-conf` プロジェクトへの正しいパス文字列(`:java-conf`)を取得するために、 `getSubProject` というメソッドを作成してありますので、それを利用してください
 * `testCompile` がjarファイル `libs/junit.jar` に依存する
 
-なお、確認は `dependencies` タスクでも構いませんが、 `showTestDep` という `testRuntime` に登録されているファイルをすべて表示するタスクを作ってありますので、そちらを使ってください。
+なお、確認は `dependencies` タスクでも構いません。
+また、 `showTestDep` という `testRuntime` に登録されているファイルをすべて表示するタスクを作ってありますので、そちらも使ってください。
 
 次のように出力されれば成功です。
 
+.`dependencies` の場合
+[source]
+----
+compile - Compile classpath for source set 'main'.
+\--- project :java-conf
+     +--- javax.json:javax.json-api:1.0
+     \--- com.owlike:genson:1.3
+
+default - Configuration for default artifacts.
+\--- project :java-conf
+     +--- javax.json:javax.json-api:1.0
+     \--- com.owlike:genson:1.3
+
+runtime - Runtime classpath for source set 'main'.
+\--- project :java-conf
+     +--- javax.json:javax.json-api:1.0
+     \--- com.owlike:genson:1.3
+
+testCompile - Compile classpath for source set 'test'.
+\--- project :java-conf
+     +--- javax.json:javax.json-api:1.0
+     \--- com.owlike:genson:1.3
+
+testRuntime - Runtime classpath for source set 'test'.
+\--- project :java-conf
+     +--- javax.json:javax.json-api:1.0
+     \--- com.owlike:genson:1.3
+----
+
+.`showTestDep` の場合
 [source]
 ----
 :showTestDep
@@ -221,3 +252,201 @@ dependencies {
 /path/to/home/.gradle/caches/.../javax.json-api-1.0.jar
 /path/to/home/.gradle/caches/.../genson-1.3.jar
 ----
+
+== Transitive dependencies(推移的依存性) Management
+
+Gradleの依存性管理はtransitive dependencies(推移的依存性)を含めた依存性の管理機能を提供しています。
+
+=== Transitive dependencies
+
+プロダクションの依存ライブラリーが他の複数のライブラリーに依存している時に、このプロダクションはそれらすべての依存ライブラリーに依存することになります。
+このような連鎖的な依存性をTransitive dependenciesと呼びます。
+Transitive dependenciesはTree構造のデータとして表現されます。
+このTransitive dependenciesを適切に扱わない場合、ビルドは容易に壊れてしまいます。
+特に依存するライブラリーは同じでもバージョンが異なるものがTreeの中にある場合はその傾向が顕著になります。
+Gradleを含むビルドツールはたいていバージョンのコンフリクトを解決する手段を持っていますが、Gradleはその解決を柔軟に提供する手段を提供しています。
+
+.Transitive dependencies
+====
+
+.Guice4.0というDIライブラリー
+[source]
+----
+com.google.inject:guice:4.0
+├── javax.inject:javax.inject:1
+├── aopalliance:aopalliance:1.0
+└── com.google.guava:guava:16.0.1
+----
+
+.airlift-stats(airliftというRESTサーバーを簡単に作るライブラリーに組み込まれているパフォーマンス計測ライブラリー)
+[source]
+----
+io.airlift:stats:0.116
+├── io.airlift:units:0.116
+│   ├── javax.validation:validation-api:1.1.0.Final
+│   └── com.google.guava:guava:18.0
+├── org.weakref:jmxutils:1.18
+├── com.google.guava:guava:18.0
+├── com.fasterxml.jackson.core:jackson-annotations:2.4.4
+├── com.google.code.findbugs:annotations:2.0.3
+├── io.airlift:slice:0.10
+└── org.openjdk.jol:jol-core:0.1
+----
+
+上記のGuice4.0とairlift-stats0.116を依存ライブラリーとして指定した場合、
+guavaのバージョンがコンフリクトします。
+
+Gradleではこれらをどのように解決するでしょうか？
+
+.`build.gradle`
+[source,groovy]
+----
+dependencies {
+  compile 'io.airlift:stats:0.116'
+  compile 'com.google.inject:guice:4.0'
+}
+----
+
+.`dependencies` タスクの実行結果
+[source]
+----
++--- io.airlift:stats:0.116
+|    +--- io.airlift:units:0.116
+|    |    +--- javax.validation:validation-api:1.1.0.Final
+|    |    \--- com.google.guava:guava:18.0
+|    +--- org.weakref:jmxutils:1.18
+|    +--- com.google.guava:guava:18.0
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.4
+|    +--- com.google.code.findbugs:annotations:2.0.3
+|    +--- io.airlift:slice:0.10
+|    \--- org.openjdk.jol:jol-core:0.1
+\--- com.google.inject:guice:4.0
+     +--- javax.inject:javax.inject:1
+     +--- aopalliance:aopalliance:1.0
+     \--- com.google.guava:guava:16.0.1 -> 18.0
+----
+
+最後の行に注目してください。
+
+[source]
+----
+\--- com.google.guava:guava:16.0.1 -> 18.0
+----
+
+guavaのバージョン16.0.1の横に、 `-> 18.0` とついています。これはguice4.0のguavaへの依存は18.0を使うことを表します。
+Gradleはデフォルトでバージョンの大きい方に合わせるようにコンフリクトを解決します。
+
+====
+
+==== 演習3
+
+`java-projects/dep-project/java-conf` に移動して、 `dependencies` タスクを実行して、実際にバージョンコンフリクトがどのように解決されているか確認してください。
+
+=== Transitive dependenciesのハンドリング
+
+Transitive dependenciesに対する柔軟な操作の一部を紹介します。
+
+.Transitive dependenciesを無視する
+====
+
+Transitive dependenciesを解決しないという選択を行えます。
+
+.Transitive dependenciesの解決を無効にする
+[source, groovy]
+----
+configurations.myConfiguration {
+  transitive = false
+}
+----
+
+====
+
+==== 演習4
+
+「Transitive dependenciesを無視する」方法を参考にして、 `java-projects/dep-project/java-conf` の `testCompile` `Configuration` に対しては transitive dependencies を解決しないように設定してください。
+なお、確認方法は `dependencies` タスクで行ってください。
+
+'''
+
+.特定のモジュールを除外する
+====
+
+ある依存ライブラリーのtransitive dependenciesを除外することができます。
+
+.特定のモジュールを除外する方法1
+[source,groovy]
+----
+dependencies {
+  testCompile('junit:junit:4.12') {
+    exclude module: 'hamcrest-core'
+  }
+}
+----
+
+.特定のモジュールを除外する方法2
+[source,groovy]
+----
+configurations {
+  testCompile {
+    exclude module: 'hamcrest-core'
+  }
+}
+----
+
+====
+
+==== 演習5
+
+「特定のモジュールを除外する」方法を参考にして、それぞれを試してください。
+なお、確認方法は `dependencies` タスクで行ってください。
+
+'''
+
+.バージョンコンフリクトが発生した場合はBUILD FAILEDにする
+====
+
+.バージョンのコンフリクトが発生する場合にビルドを失敗させる方法
+[source,groovy]
+----
+/* すべてのconfigurationでバージョンのコンフリクトが発生したら落ちる */
+configurations.all {
+  resolutionStrategy {
+    failOnVersionConflict()
+  }
+}
+----
+
+====
+
+==== 演習6
+
+「バージョンコンフリクトが発生した場合はBUILD FAILEDにする」方法を参考にして、すべての `Configuration` でバージョンコンフリクトが発生した場合に落ちるように設定してください。
+なお、確認は `dependencies` タスクで行ってください。
+
+'''
+
+.特定のライブラリーのバージョンを固定する
+====
+
+Transitive dependenciesを含めて、特定のライブラリーのバージョンを固定にします。
+
+.特定のライブラリーのバージョンを固定化する方法
+[source,groovy]
+----
+configurations.all {
+  resolutionStrategy {
+    force 'junit:junit:4.12'
+  }
+}
+----
+
+====
+
+==== 演習7
+
+「特定のライブラリーのバージョンを固定する」方法を参考にして、すべての `Configuration` で `junit` のバージョンを `4.12` になるように設定してください。
+なお、確認は `dependencies` タスクで行ってください。
+
+= まとめ
+
+Gradleにおける依存性管理の方法について簡単に学習しました。プロダクションで利用するライブラリー管理に役立たせてください。
