@@ -17,9 +17,9 @@
 |章 |セクション |project |sub project
 
 |1-java
-|1-normal-project
+|1-init
 |java-projects
-|normal-project
+|init-project
 
 |2-task
 |3-up-to-date
