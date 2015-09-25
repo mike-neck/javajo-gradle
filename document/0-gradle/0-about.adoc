@@ -21,3 +21,30 @@
 * アーカイブをレポジトリーにアップロードすること
 * 依存性解決の具体的な内容
 * Gradleのプラグインの作成
+
+= 自己紹介
+
+.自己紹介
+|===
+|項目 |内容
+
+|名前
+|持田　真哉
+
+|twitter
+|https://twitter.com/mike_neck[@mike_neck]
+
+|仕事
+|ない
+
+|できること
+|Gradle/Java/Groovy
+
+|Gradle歴
+|4年くらい
+
+|公開しているプラグイン
+|rule-base-model-generation-plugin +
+test-kit-support-plugin +
+gradle-payara(unofficial) plugin
+|===
