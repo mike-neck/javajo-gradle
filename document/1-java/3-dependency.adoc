@@ -449,4 +449,253 @@ configurations.all {
 
 = まとめ
 
-Gradleにおける依存性管理の方法について簡単に学習しました。プロダクションで利用するライブラリー管理に役立たせてください。
+* Gradleにおける依存性管理の方法について簡単に学習しました。
+** プロダクションで利用するライブラリー管理に役立たせてください。
+* 依存性解決のためにはレポジトリーに問い合わせなければなりませんが、そのレポジトリーについては特にふれませんでした。
+** このセクションの付録に簡単に概要をつけていますので、そちらをご覧ください。
+* 作成したライブラリーをレポジトリーに登録する方法についてふれませんでした。
+** https://docs.gradle.org/current/userguide/publishing_maven.html[公式のドキュメント] を参考にしてください。
+
+.レポジトリー
+[TIP]
+======
+
+`dependencies{}` ブロックで宣言された依存性は登録されたレポジトリーに問い合わせて、解決・取得します。Gradleで利用できるレポジトリーには以下のものが挙げられます。
+
+.レポジトリーの種類
+|===
+|レポジトリーの種類 |詳細
+
+|Maven Central repository
+|Gradleが標準で提供するMaven Central repositoryへの参照
+
+|Maven JCenter repository
+|Gradleが標準で提供するBintray JCenter repositoryへの参照 +
+最近はMaven Centralよりももjcenterレポジトリーを利用するほうが多い(理由は後述)
+
+|Maven local repository
+|Gradleが標準で提供するlocal Maven repository(`/path/to/user/.m2/repository`)への参照
+
+|Maven repository
+|Mavenタイプのレポジトリー。url、ユーザー情報などは設定する必要がある
+
+|Ivy repository
+|Ivyタイプのレポジトリー。url、ユーザー情報などは設定する必要がある
+
+|Flat directory repository
+|マシン上のファイルシステムに構築されたレポジトリー
+|===
+
+
+.Maven Central repository
+[NOTE]
+====
+
+Maven Central (http://repo1.maven.org/maven2) に問い合わせるための設定です。
+
+.Maven Centralを利用するレポジトリーの設定
+[source,groovy]
+----
+repositories {
+  mavenCentral()
+}
+----
+
+なお、Maven CentralはHTTPのみサポートされており、HTTPSはサポートされていません。
+HTTPSを利用したい場合はJCenterを利用したほうがよいでしょう。
+
+====
+
+.Maven JCenter repository
+[NOTE]
+====
+
+BintrayのJCenterレポジトリーはほぼすべてのポピュラーなOSSを集めたレポジトリーです(Maven Centralのキャッシュも含む)。また、Bintrayに直接上げられたものも含みます。
+
+Maven JCenter レポジトリー (https://jcenter.bintray.com) に問い合わせるための設定です。
+
+.Maven JCenterを利用するレポジトリーの設定
+[source,groovy]
+----
+repositories {
+  jcenter()
+}
+----
+
+なお、JCenterをHTTPSではなく、HTTPでアクセスしたい場合は次のように設定してください。
+
+.Maven JCenterをHTTPで利用する
+[source,groovy]
+----
+repositories {
+  jcenter {
+    url 'http://jcenter.bintray.com/'
+  }
+}
+----
+
+====
+
+.Maven Local repository
+[NOTE]
+====
+
+Maven local repositoryに問い合わせるための設定です。
+
+.Maven local repositoryを利用するレポジトリーの設定
+[source,groovy]
+----
+repositories {
+  mavenLocal()
+}
+----
+
+通常は `/path/to/home/.m2/repository` を参照しますが、 `/path/to/home/.m2/settings.xml` あるいは `M2_HOME/conf/settings.xml` でレポジトリーの場所が変更されている場合は、そちらを参照します。
+
+====
+
+.Maven repository
+[NOTE]
+====
+
+独自のMaven repositoryに問い合わせるための設定です。
+
+.独自Maven repositoryの設定
+[source,groovy]
+----
+repositories {
+  maven {
+    url 'https://repo.your-domain.com/m2'
+    credentials {
+      username 'user'
+      password 'password'
+    }
+    authentication {
+      /* digest認証の場合 */
+      digest(DigestAuthentication)
+    }
+  }
+  maven {
+    url 'http://repo-another.com/m2'
+    credentials {
+      username 'user-name'
+      password 'pass-word'
+    }
+    authentication {
+      /* basic認証の場合 */
+      basic(BasicAuthentication)
+    }
+  }
+  maven {
+    /* s3を使う場合 */
+    url 's3://my-bucket/m2'
+    credentials(AwsCredentials) {
+      accessKey 'access'
+      secretKey 'secret'
+    }
+  }
+}
+----
+
+.認証情報の保存場所
+[TIP]
+=====
+
+認証情報を `build.gradle` に直接記述するのはセキュリティ的に危険です。この場合は下記のファイルにプロパティとして設定しておくのがよいでしょう。
+
+.`/path/to/home/.gradle/gradle.properties`
+[source]
+----
+s3AccessKey=xxxxxxxx
+s3SecretKey=XXXXXXXXX
+----
+
+なお、この値は `properties` タスクを実行した時に表示されてしまいますので、人前では `properties` タスクを **絶対に実行しない** でください。
+
+=====
+
+====
+
+.Ivy repository
+[NOTE]
+====
+
+独自のIvy repositoryに問い合わせるための設定です。
+
+.Ivy repositoryの設定
+[source,groovy]
+----
+repositories {
+  ivy {
+    url 'http://repo.your-domain.com/ivy'
+    layout 'maven'
+    /* basic認証が必要な場合 */
+    credentials {
+      username 'user-name'
+      password 'pass-word'
+    }
+  }
+}
+----
+
+`layout` はレポジトリーのディレクトリーのレイアウトで、次の値が指定できます。
+
+.`layout` の値
+|===
+|値 |artifactのURI |ivy.xmlのURI
+
+|`gradle`
+|`$baseUri/[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier])(.[ext])`
+|`$baseUri/[organisation]/[module]/[revision]/ivy-[revision].xml`
+
+|`maven`
+|`$baseUri/[orgPath]/[module]/[revision]/[artifact]-[revision](-[classifier])(.[ext])`
+|`$baseUri/[orgPath]/[module]/[revision]/ivy-[revision].xml`
+
+|`ivy`
+|`$baseUri/[organisation]/[module]/[revision]/[type]/[artifact](.[ext])`
+|`$baseUri/[organisation]/[module]/[revision]/[type]/[artifact](.[ext])`
+
+|`pattern`
+|第二引数に渡す `Closure` の中で `artifact` メソッドにパターンを指定する
+|第二引数に渡す `Closure` の中で `ivy` メソッドにパターンを指定する
+|===
+
+====
+
+.File directory repository
+[NOTE]
+====
+
+マシン内のファイルシステムに問い合わせるための設定です。
+
+.File directory repositoryの設定
+[source,groovy]
+----
+repositories {
+  flatDir {
+    dirs 'libs'
+  }
+}
+----
+
+File directory repositoryを使う場合はメタデータ(ivy.xmlやpom.xml)を利用できないため、メタデータを自動生成します。ただし、他のレポジトリーからメタデータを利用できる場合はそちらを優先して利用します。
+
+また本セクションでは `libs/junit.jar` というファイルを使用しましたが、グループ名がこの場合は不明だったため、次のような依存性の定義をおこなうこともできます。
+
+.groupおよびversionが特定できないためnameで指定することが可能
+[source,groovy]
+----
+repositories {
+  flatDir {
+    dirs 'libs'
+  }
+}
+dependencies {
+  testCompile name: 'junit'
+}
+----
+
+====
+
+======
