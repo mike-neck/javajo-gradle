@@ -40,7 +40,8 @@ Javaプロジェクトでは次の `Configuration` がデフォルトで提供�
 |テスト用のJavaソースコードをコンパイルする際に参照する依存ライブラリー
 
 |`testRuntime`
-|`testCompile`
+|`testCompile` +
+`runtime`
 |テストを動かす際に参照する依存ライブラリー
 
 |`default`
