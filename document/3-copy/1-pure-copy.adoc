@@ -169,7 +169,7 @@ task copyDir(type: Copy) {
 }
 ----
 
-また、特に違いはありませんが、 `project.fileTree` メソッドによって、 `ConfigurableFileTree` オブジェクトを構築して `from` に指定することも可能です。動作としては、 `from` にディレクトリーを指定したものと同様の動きに鳴ります。
+また、特に違いはありませんが、 `project.fileTree` メソッドによって、 `ConfigurableFileTree` オブジェクトを構築して `from` に指定することも可能です。動作としては、 `from` にディレクトリーを指定したものと同様の動きになります。
 
 .`fileTree` を用いてディレクトリーごとコピー
 [source,groovy]
