@@ -1,12 +1,27 @@
 apply plugin: 'base'
 
-if (file('answer.gradle').exists()) {
-    apply from: 'answer.gradle'
+ext {
+    answer = 'answer'
 }
 
 task copyJavaImage(type: Copy) {
     from file('../images/java.jpg')
     into "${buildDir}/java-image"
+}
+
+// 演習2解答例(fromに複数のファイルを指定する)
+task copyMultiImages(type: Copy, group: answer) {
+    description 'exercise2'
+    from '../images/java.jpg', '../images/jvm/groovy.png', '../images/jvm/scala.png'
+    into "${buildDir}/jvm-langs"
+}
+
+task copyMultitimeFrom(type: Copy, group: answer) {
+    description 'exercise2'
+    ['java.jpg', 'jvm/groovy.png', 'jvm/scala.png'].each {
+        from "../images/${it}"
+    }
+    into "${buildDir}/multi-images"
 }
 
 task copyDir(type: Copy) {
@@ -17,6 +32,13 @@ task copyDir(type: Copy) {
 task copyTree(type: Copy) {
     from fileTree('../images/server')
     into "${buildDir}/copy-tree"
+}
+
+// 演習3解答例
+task copyImages(type: Copy, group: answer) {
+    description 'exercise3'
+    from fileTree('../images')
+    into "${buildDir}/images"
 }
 
 task copyOnlyPng(type: Copy) {
@@ -39,4 +61,15 @@ task copyComplex(type: Copy) {
         include 'g*'
     }
     into "${buildDir}/copy-complex"
+}
+
+// 演習6解答例
+task copyMoreComplex(type: Copy, group: answer) {
+    description 'exercise6'
+    from (fileTree('../images')) {
+        include '**/*.png'
+        exclude '**/*oo*.*'
+        include '**/j*.*'
+    }
+    into "${buildDir}/complex"
 }
