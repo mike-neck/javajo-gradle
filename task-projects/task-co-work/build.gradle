@@ -1,9 +1,5 @@
 apply plugin: 'base'
 
-if(file('answer.gradle').exists()) {
-    apply from: 'answer.gradle'
-}
-
 task fiveLangs {
     def outFile = '5-langs.txt'
     def contents = [
@@ -79,6 +75,54 @@ task pitcher(group: 'baseball') {
     }
 }
 pitcher.dependsOn catcher
+
+// 演習4解答例
+ext.sier = 'SIer'
+task baseDesign(group: sier)
+task detailDesign(group: sier, dependsOn: 'baseDesign')
+task databaseDesign(group: sier, dependsOn: 'baseDesign')
+task environmentDesign(group: sier, dependsOn: 'baseDesign')
+task coding(group: sier, dependsOn: ['detailDesign', 'databaseDesign'])
+task integTest(group: sier, dependsOn: ['detailDesign', 'coding'])
+task totalTest(group: sier, dependsOn: ['integTest', 'environmentDesign', 'baseDesign'])
+task delivery(group: sier, dependsOn: 'totalTest')
+
+// 演習5解答例
+ext.answer5 = 'answer5'
+class RandomNumberTask extends DefaultTask {
+    int number
+    @TaskAction
+    void showNumber() {
+        def range = 1..10
+        def num = range[new Random().nextInt(range.size())]
+        println num
+        number = num
+    }
+}
+
+task randomNumber (type: RandomNumberTask)
+
+task even(dependsOn: 'randomNumber') {
+    def dep = tasks.randomNumber
+    onlyIf {
+        dep.didWork && dep.number % 2 == 0
+    }
+    doLast {
+        println "${dep.number} is even."
+    }
+}
+
+task great(dependsOn: 'randomNumber') {
+    def dep = tasks.randomNumber
+    onlyIf {
+        dep.didWork && dep.number > 5
+    }
+    doLast {
+        println "${dep.number} is great."
+    }
+}
+
+task random(group: answer5, dependsOn: ['even', 'great'])
 
 /*
 mustRunAfter による設定
