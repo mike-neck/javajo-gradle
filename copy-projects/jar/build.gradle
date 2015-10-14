@@ -45,6 +45,22 @@ task fatJar(type: Jar) {
     }
 }
 
-if (file('answer.gradle').exists()) {
-    apply from: 'answer.gradle'
+// 演習2解答例
+task executableJar(type: Jar, dependsOn: 'jar', group: 'archiving') {
+    description 'Assembles class files and collects all dependencies into a jar file.'
+    from tasks.jar.outputs.files.collect {zipTree(it)}
+    from (configurations.runtime.findAll{
+        !it.directory
+    }.collect {
+        zipTree(it)
+    }) {
+        exclude 'META-INF/**/*'
+        exclude 'LICENSE'
+    }
+    baseName = 'codic'
+    destinationDir file("${buildDir}/dist")
+    manifest {
+        attributes 'Main-Class': 'javajo.sample.codic.CodicMain'
+        attributes 'Created-By': "Gradle ${gradle.gradleVersion}", 'Builder'
+    }
 }
