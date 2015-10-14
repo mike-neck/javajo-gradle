@@ -1,3 +1,27 @@
-if(file('answer.gradle').exists()) {
-    apply from: 'answer.gradle'
+// 演習1解答例
+apply plugin: 'java'
+
+// 演習2解答例
+ext {
+    jdk = '1.8'
+    encoding = 'UTF-8'
+}
+
+// 演習3解答例
+dependencies {
+    compile 'org.jetbrains:annotations:13.0'
+    //演習6解答例
+    testCompile 'junit:junit:4.12'
+}
+
+// 演習4解答例
+repositories {
+    jcenter()
+}
+
+// 演習5解答例
+tasks.withType(JavaCompile) {
+    sourceCompatibility = jdk
+    targetCompatibility = jdk
+    options.encoding = encoding
 }
