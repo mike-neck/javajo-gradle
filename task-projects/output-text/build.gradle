@@ -1,9 +1,5 @@
 apply plugin: 'base'
 
-if (file('answer.gradle').exists()) {
-    apply from: 'answer.gradle'
-}
-
 /*
 このディレクトリー(task-projects/output-text)にfirst-text.txtというテキストファイルを出力するタスク
  */
@@ -20,5 +16,56 @@ task loadText {
     doLast {
         def text = file('input-text.txt').text
         println text
+    }
+}
+
+// 演習2解答例
+task langs {
+    doLast {
+        def contents = [Scala:3, Java:1, Groovy:1, Python:4, Ruby:5].sort {
+            it.value
+        }.collect {
+            it.key
+        }.join('\n')
+        file('languages.txt').write(contents, 'UTF-8')
+    }
+}
+
+// 演習3解答例
+task langsToMd {
+    doLast {
+        def mdFile = file('languages.md')
+        file('languages.txt').text.eachLine {
+            mdFile << "* ${it}"
+            mdFile << '\n'
+        }
+    }
+}
+
+// 演習4解答例
+task listAllFiles {
+    def root = "${projectDir}/"
+    def tree = fileTree('files')
+    def outputFile = file('all-files.txt')
+    doLast {
+        def contents = tree.collect {
+            "${it}".replace(root, '')
+        }.join('\n')
+        outputFile.write(contents, 'UTF-8')
+    }
+}
+
+// 演習5解答例
+task listJavaSources {
+    def runFromRoot = rootProject.name == 'javajo-gradle'
+    def baseDir = runFromRoot ? rootProject.project(':java-projects:fail-tests').projectDir : file('../../java-projects/fail-tests')
+    def tree = runFromRoot ? rootProject.project(':java-projects:fail-tests').fileTree('src') : fileTree('../../java-projects/fail-tests/src')
+    def base = "${baseDir}/"
+    def outputFile = file('java-sources.txt')
+    doLast {
+        def files = tree.collect {
+            "${it}".replace(base, '')
+        }.join('\n')
+        outputFile.write(files, 'UTF-8')
     }
 }
