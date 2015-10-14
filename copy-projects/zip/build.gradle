@@ -1,9 +1,25 @@
 apply plugin: 'base'
 
+ext {
+    answer = 'answer'
+}
+
 task zipServer(type: Zip) {
     from '../images/server'
     baseName 'zip-server'
     destinationDir = file("${buildDir}/server-image")
+}
+
+// 演習2解答例
+task zipComplex(type: Zip, group: answer) {
+    description 'exercise2'
+    from (fileTree('../images')) {
+        include '**/*.png'
+        exclude '**/*oo*.*'
+        include '**/j*.*'
+    }
+    baseName = 'complex'
+    destinationDir = file("${buildDir}/exercise2")
 }
 
 task zipIntoDist(type: Zip) {
@@ -34,6 +50,9 @@ task fiveLangs {
     }
 }
 
-if (file('answer.gradle').exists()) {
-    apply from: 'answer.gradle'
+// 演習4解答例
+task zipFiveLangs(type: Zip, group: answer) {
+    from tasks.fiveLangs
+    destinationDir = file("${buildDir}/zip-langs")
+    baseName = 'langs'
 }
