@@ -1,9 +1,5 @@
 apply plugin: 'base'
 
-if (file('answer.gradle').exists()) {
-    apply from: 'answer.gradle'
-}
-
 task langs {
     def outputFile = file('languages.txt')
     /* outputs.file で定義する */
@@ -36,6 +32,34 @@ task osAndLang {
         matrix.each {
             file("conbination/${it.os}${it.lang}.txt")
                     .write("${it.os} - ${it.lang}", 'UTF-8')
+        }
+    }
+}
+
+// 演習2-1解答例
+task fiveLangs(group: 'answer') {
+    def fileName = '5-langs.txt'
+    outputs.file fileName
+    doLast {
+        def contents = [Scala:3, Java:1, Groovy:2, Haskell:4, C:5].sort {
+            it.value
+        }.collect {
+            it.key
+        }.join('\n')
+        file(fileName).write(contents, 'UTF-8')
+    }
+}
+
+// 演習2-2解答例
+task fiveLangsToMd(group: 'answer') {
+    def inName = '5-langs.txt'
+    def outName = '5-langs.md'
+    inputs.file inName
+    outputs.file outName
+    doLast {
+        file(inName).eachLine('UTF-8') {
+            file(outName) << "* ${it}"
+            file(outName) << '\n'
         }
     }
 }
@@ -101,5 +125,24 @@ task langsWithUpToDate {
     }
     doLast {
         outputFile.write(contents, 'UTF-8')
+    }
+}
+
+// 演習5解答例
+task randomJvmLang(group: 'answer') {
+    def list = ['Java', 'Groovy', 'Scala']
+    def lang = list[new Random().nextInt(list.size())]
+    def fileName = 'jvm-language.txt'
+
+    outputs.file fileName
+    outputs.upToDateWhen {
+        outputs.files.singleFile.exists() && outputs.files.singleFile.text == lang
+    }
+    doLast {
+        logger.lifecycle "file contents[$lang]"
+        if (outputs.files.singleFile.exists()) {
+            logger.lifecycle "previous [${outputs.files.singleFile.text}]"
+        }
+        outputs.files.singleFile.write(lang, 'UTF-8')
     }
 }
