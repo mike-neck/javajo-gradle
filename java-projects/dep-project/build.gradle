@@ -9,10 +9,6 @@ def getSubProject = {String pjPath ->
     runFromRoot ? "${path}${pjPath}" : pjPath
 }
 
-if (file('answer.gradle').exists()) {
-    apply from: 'answer.gradle'
-}
-
 subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
@@ -27,6 +23,9 @@ repositories {
 }
 
 dependencies {
+    // 演習2解答例
+    compile project(getSubProject(':java-conf'))
+    testCompile files('libs/junit.jar')
 }
 
 task showTestDep(group: 'help') {
