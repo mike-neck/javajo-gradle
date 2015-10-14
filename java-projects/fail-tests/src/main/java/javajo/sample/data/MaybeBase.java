@@ -117,8 +117,9 @@ final class MaybeBase {
         @Override
         public <R> Maybe<R> fmap(Function<? super V, ? extends Maybe<R>> fun) {
             verifyNotNullFunction(fun);
-            // nullチェックせずに返しているのでインターフェースが求める「nullの場合はNothingを返す」を満たせていない
-            return fun.apply(value);
+            // 演習2解答例
+            Maybe<R> maybe = fun.apply(value);
+            return maybe == null ? new Nothing<>() : maybe;
         }
 
         @Override

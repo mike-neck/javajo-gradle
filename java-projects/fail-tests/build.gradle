@@ -23,6 +23,10 @@ dependencies {
     testCompile 'org.assertj:assertj-core-java8:1.0.0m1'
 }
 
-if (file('answer.gradle').exists()) {
-    apply from: 'answer.gradle'
+test {
+    // 演習3解答例
+    maxParallelForks = 4 // 並列数をここに指定する
+
+    // 演習4解答例
+    exclude '**/*Test$*'
 }
