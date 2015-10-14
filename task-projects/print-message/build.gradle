@@ -4,6 +4,9 @@ apply plugin: 'base'
 
 task my1stTask
 
+// 演習3解答例
+my1stTask.group = 'my task'
+
 // 2. 設定は施しているけど、何もしない my2ndTask
 
 task my2ndTask {
@@ -18,6 +21,9 @@ task my3rdTask << {
     println "This is ${name}."
 }
 
+// 演習3解答例
+my3rdTask.group 'my task'
+
 // 4. あるタイプのタスク
 
 class MyTask extends DefaultTask {
@@ -28,7 +34,7 @@ class MyTask extends DefaultTask {
     }
 }
 
-task my4thTask(type: MyTask)
+task my4thTask(type: MyTask, /*演習3解答例*/group: 'my task')
 
 // 5. あるタイプのタスクに設定も施す
 
@@ -36,4 +42,20 @@ task my5thTask(type: MyTask) {
     group = 'my task'
     description = 'doing something'
     message = 'hello'
+}
+
+ext {
+    pattern = 'yyyy-MM-dd HH:mm:ss.SSS'
+}
+
+// 演習2解答例
+task timeOfConf {
+    println(new Date().format(pattern))
+}
+
+// 演習2解答例
+task timeOfExec {
+    doLast {
+        println (new Date().format(pattern))
+    }
 }
